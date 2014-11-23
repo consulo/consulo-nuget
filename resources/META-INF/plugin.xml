@@ -2,4 +2,6 @@
 	<id>org.mustbe.consulo.nuget</id>
 	<name>NuGet</name>
 	<version>SNAPSHOT</version>
+	<depends>com.intellij.xml</depends>
+	<depends>org.mustbe.consulo.dotnet.core</depends>
 </idea-plugin>
