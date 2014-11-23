@@ -1,0 +1,5 @@
+<idea-plugin>
+	<id>org.mustbe.consulo.nuget</id>
+	<name>NuGet</name>
+	<version>SNAPSHOT</version>
+</idea-plugin>
