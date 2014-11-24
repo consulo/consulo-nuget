@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import com.intellij.util.xml.Attribute;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
+import com.intellij.util.xml.Required;
 
 /**
  * @author VISTALL
@@ -29,13 +30,16 @@ public interface NuGetPackage extends DomElement
 {
 	@NotNull
 	@Attribute
+	@Required
 	GenericAttributeValue<String> getId();
 
 	@NotNull
 	@Attribute
+	@Required
 	GenericAttributeValue<String> getVersion();
 
 	@NotNull
 	@Attribute("targetFramework")
+	@Required
 	GenericAttributeValue<String> getTargetFramework();
 }

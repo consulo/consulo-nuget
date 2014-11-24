@@ -16,9 +16,19 @@
 
 package org.mustbe.consulo.nuget.module.extension;
 
+import org.consulo.lombok.annotations.LazyInstance;
 import org.consulo.module.extension.impl.ModuleExtensionImpl;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.nuget.NuGetFileTypeFactory;
+import org.mustbe.consulo.nuget.dom.NuGetPackagesFile;
 import com.intellij.openapi.roots.ModuleRootLayer;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
+import com.intellij.psi.xml.XmlFile;
+import com.intellij.util.xml.DomFileElement;
+import com.intellij.util.xml.DomManager;
 
 /**
  * @author VISTALL
@@ -29,5 +39,35 @@ public class NuGetModuleExtension extends ModuleExtensionImpl<NuGetModuleExtensi
 	public NuGetModuleExtension(@NotNull String id, @NotNull ModuleRootLayer moduleRootLayer)
 	{
 		super(id, moduleRootLayer);
+	}
+
+	@NotNull
+	@LazyInstance
+	public NuGetRepositoryWorker getWorker()
+	{
+		return new NuGetRepositoryWorker(NuGetModuleExtension.this);
+	}
+
+	@Nullable
+	public NuGetPackagesFile getPackagesFile()
+	{
+		VirtualFile moduleDir = getModule().getModuleDir();
+		if(moduleDir == null)
+		{
+			return null;
+		}
+		VirtualFile fileByRelativePath = moduleDir.findFileByRelativePath(NuGetFileTypeFactory.PACKAGES_CONFIG);
+		if(fileByRelativePath == null)
+		{
+			return null;
+		}
+		PsiFile maybeXmlFile = PsiManager.getInstance(getProject()).findFile(fileByRelativePath);
+		if(!(maybeXmlFile instanceof XmlFile))
+		{
+			return null;
+		}
+		DomFileElement<NuGetPackagesFile> fileElement = DomManager.getDomManager(getProject()).getFileElement((XmlFile) maybeXmlFile,
+				NuGetPackagesFile.class);
+		return fileElement == null ? null : fileElement.getRootElement();
 	}
 }

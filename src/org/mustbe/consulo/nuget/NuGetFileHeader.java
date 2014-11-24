@@ -18,18 +18,24 @@ package org.mustbe.consulo.nuget;
 
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.nuget.dom.NuGetPackagesFile;
+import org.mustbe.consulo.nuget.module.extension.NuGetModuleExtension;
+import org.mustbe.consulo.nuget.module.extension.NuGetMutableModuleExtension;
 import com.intellij.ide.highlighter.XmlFileType;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.module.ModuleUtil;
+import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.ui.EditorNotificationPanel;
 import com.intellij.ui.EditorNotifications;
 import com.intellij.util.xml.DomFileElement;
 import com.intellij.util.xml.DomManager;
+import lombok.val;
 
 /**
  * @author VISTALL
@@ -53,14 +59,14 @@ public class NuGetFileHeader extends EditorNotifications.Provider<EditorNotifica
 
 	@Nullable
 	@Override
-	public EditorNotificationPanel createNotificationPanel(VirtualFile file, FileEditor fileEditor)
+	public EditorNotificationPanel createNotificationPanel(final VirtualFile file, FileEditor fileEditor)
 	{
 		if(file.getFileType() != XmlFileType.INSTANCE)
 		{
 			return null;
 		}
 
-		PsiFile maybeXmlFile = PsiManager.getInstance(myProject).findFile(file);
+		val maybeXmlFile = PsiManager.getInstance(myProject).findFile(file);
 		if(!(maybeXmlFile instanceof XmlFile))
 		{
 			return null;
@@ -69,15 +75,58 @@ public class NuGetFileHeader extends EditorNotifications.Provider<EditorNotifica
 				NuGetPackagesFile.class);
 		if(fileElement != null)
 		{
-			EditorNotificationPanel editorNotificationPanel = new EditorNotificationPanel();
-			editorNotificationPanel.createActionLabel("Update dependencies", new Runnable()
+			val moduleForPsiElement = ModuleUtilCore.findModuleForFile(file, myProject);
+			if(moduleForPsiElement == null)
 			{
-				@Override
-				public void run()
+				return null;
+			}
+			val extension = ModuleUtil.getExtension(moduleForPsiElement, NuGetModuleExtension.class);
+			if(extension == null)
+			{
+				return null;
+			}
+
+			EditorNotificationPanel editorNotificationPanel = new EditorNotificationPanel();
+			editorNotificationPanel.setText("NuGet");
+
+			val worker = extension.getWorker();
+
+			if(!worker.isUpdateInProgress())
+			{
+				editorNotificationPanel.createActionLabel("Update dependencies", new Runnable()
 				{
-				}
-			});
-			return editorNotificationPanel;
+					@Override
+					public void run()
+					{
+						worker.forceUpdate();
+					}
+				});
+				editorNotificationPanel.createActionLabel("Remove NuGet support", new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						val modifiableModel = ModuleRootManager.getInstance(moduleForPsiElement).getModifiableModel();
+
+						worker.cancelTasks();
+
+						NuGetMutableModuleExtension mutableModuleExtension = modifiableModel.getExtension(NuGetMutableModuleExtension.class);
+						assert mutableModuleExtension != null;
+						mutableModuleExtension.setEnabled(false);
+
+						ApplicationManager.getApplication().runWriteAction(new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								modifiableModel.commit();
+								EditorNotifications.updateAll();
+							}
+						});
+					}
+				});
+				return editorNotificationPanel;
+			}
 		}
 		return null;
 	}
