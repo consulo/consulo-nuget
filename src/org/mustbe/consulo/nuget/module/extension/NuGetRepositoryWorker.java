@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jetbrains.annotations.NotNull;
 import org.mustbe.consulo.nuget.dom.NuGetPackage;
+import org.mustbe.consulo.nuget.util.NuPkgUtil;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
@@ -49,7 +50,6 @@ import com.intellij.openapi.vfs.newvfs.RefreshQueue;
 import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
 import com.intellij.platform.templates.github.DownloadUtil;
 import com.intellij.ui.EditorNotifications;
-import com.intellij.util.io.ZipUtil;
 import lombok.val;
 
 /**
@@ -181,7 +181,7 @@ public class NuGetRepositoryWorker
 
 						refreshQueue.put(value, extractDirFile);
 						indicator.setText("NuGet: extracting: " + downloadTarget.getPath());
-						ZipUtil.extract(downloadTarget, extractDir, new FilenameFilter()
+						NuPkgUtil.extract(downloadTarget, extractDir, new FilenameFilter()
 						{
 							@Override
 							public boolean accept(File dir, String name)
