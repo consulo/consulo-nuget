@@ -20,13 +20,13 @@ import javax.swing.Icon;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.nuget.NuGetFileTypeFactory;
 import org.mustbe.consulo.nuget.module.extension.NuGetModuleExtension;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.Iconable;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.xml.DomFileDescription;
 import icons.NuGetIcons;
@@ -43,10 +43,10 @@ public class NuGetPackagesDomFileDescription extends DomFileDescription<NuGetPac
 	}
 
 	@Override
-	public boolean isMyFile(@NotNull XmlFile file, @Nullable Module module)
+	public boolean isMyFile(@NotNull XmlFile file)
 	{
-		String name = file.getVirtualFile().getName();
-		if(!Comparing.equal(NuGetFileTypeFactory.PACKAGES_CONFIG, name))
+		VirtualFile virtualFile = file.getVirtualFile();
+		if(virtualFile == null)
 		{
 			return false;
 		}
@@ -56,7 +56,8 @@ public class NuGetPackagesDomFileDescription extends DomFileDescription<NuGetPac
 		{
 			return false;
 		}
-		return ModuleUtil.getExtension(moduleForPsiElement, NuGetModuleExtension.class) != null;
+		NuGetModuleExtension nuGetModuleExtension = ModuleUtil.getExtension(moduleForPsiElement, NuGetModuleExtension.class);
+		return nuGetModuleExtension != null && Comparing.equal(nuGetModuleExtension.getConfigFile(), virtualFile);
 	}
 
 	@Nullable

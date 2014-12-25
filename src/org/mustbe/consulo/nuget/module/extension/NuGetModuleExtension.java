@@ -18,12 +18,14 @@ package org.mustbe.consulo.nuget.module.extension;
 
 import org.consulo.lombok.annotations.LazyInstance;
 import org.consulo.module.extension.impl.ModuleExtensionImpl;
+import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.nuget.NuGetFileTypeFactory;
 import org.mustbe.consulo.nuget.dom.NuGetPackagesFile;
 import com.intellij.openapi.roots.ModuleRootLayer;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.xml.XmlFile;
@@ -36,9 +38,35 @@ import com.intellij.util.xml.DomManager;
  */
 public class NuGetModuleExtension extends ModuleExtensionImpl<NuGetModuleExtension>
 {
+	public static final String PACKAGES_CONFIG = "packages.config";
+
+	protected String myConfigFileUrl;
+
 	public NuGetModuleExtension(@NotNull String id, @NotNull ModuleRootLayer moduleRootLayer)
 	{
 		super(id, moduleRootLayer);
+	}
+
+	@Override
+	public void commit(@NotNull NuGetModuleExtension mutableModuleExtension)
+	{
+		super.commit(mutableModuleExtension);
+		myConfigFileUrl = StringUtil.nullize(mutableModuleExtension.myConfigFileUrl, true);
+	}
+
+	@Override
+	protected void getStateImpl(@NotNull Element element)
+	{
+		if(myConfigFileUrl != null)
+		{
+			element.setAttribute("config-file-url", myConfigFileUrl);
+		}
+	}
+
+	@Override
+	protected void loadStateImpl(@NotNull Element element)
+	{
+		myConfigFileUrl = element.getAttributeValue("config-file-url");
 	}
 
 	@NotNull
@@ -48,15 +76,30 @@ public class NuGetModuleExtension extends ModuleExtensionImpl<NuGetModuleExtensi
 		return new NuGetRepositoryWorker(NuGetModuleExtension.this);
 	}
 
+	public String getConfigFileUrl()
+	{
+		return myConfigFileUrl;
+	}
+
+	@Nullable
+	public VirtualFile getConfigFile()
+	{
+		if(StringUtil.isEmpty(myConfigFileUrl))
+		{
+			VirtualFile moduleDir = getModule().getModuleDir();
+			if(moduleDir == null)
+			{
+				return null;
+			}
+			return moduleDir.findFileByRelativePath(PACKAGES_CONFIG);
+		}
+		return VirtualFileManager.getInstance().findFileByUrl(myConfigFileUrl);
+	}
+
 	@Nullable
 	public NuGetPackagesFile getPackagesFile()
 	{
-		VirtualFile moduleDir = getModule().getModuleDir();
-		if(moduleDir == null)
-		{
-			return null;
-		}
-		VirtualFile fileByRelativePath = moduleDir.findFileByRelativePath(NuGetFileTypeFactory.PACKAGES_CONFIG);
+		VirtualFile fileByRelativePath = getConfigFile();
 		if(fileByRelativePath == null)
 		{
 			return null;

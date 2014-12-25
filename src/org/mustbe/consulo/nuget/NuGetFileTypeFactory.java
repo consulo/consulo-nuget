@@ -18,7 +18,7 @@ package org.mustbe.consulo.nuget;
 
 import org.jetbrains.annotations.NotNull;
 import com.intellij.ide.highlighter.XmlFileType;
-import com.intellij.openapi.fileTypes.ExactFileNameMatcher;
+import com.intellij.openapi.fileTypes.ExtensionFileNameMatcher;
 import com.intellij.openapi.fileTypes.FileTypeConsumer;
 import com.intellij.openapi.fileTypes.FileTypeFactory;
 
@@ -28,12 +28,14 @@ import com.intellij.openapi.fileTypes.FileTypeFactory;
  */
 public class NuGetFileTypeFactory extends FileTypeFactory
 {
+	@Deprecated
 	public static final String PACKAGES_CONFIG = "packages.config";
 
 	@Override
 	public void createFileTypes(@NotNull FileTypeConsumer consumer)
 	{
-		consumer.consume(XmlFileType.INSTANCE, new ExactFileNameMatcher(PACKAGES_CONFIG, true));
+		//FIXME [VISTALL] currenly its a problem - due we need always mark *.config files as XML
+		consumer.consume(XmlFileType.INSTANCE, new ExtensionFileNameMatcher("config"));
 	}
 }
 

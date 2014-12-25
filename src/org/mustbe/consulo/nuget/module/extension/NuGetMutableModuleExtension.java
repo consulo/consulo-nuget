@@ -22,6 +22,10 @@ import org.consulo.module.extension.MutableModuleExtension;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.roots.ModuleRootLayer;
+import com.intellij.openapi.util.Comparing;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.StandardFileSystems;
+import com.intellij.openapi.vfs.VirtualFileManager;
 
 /**
  * @author VISTALL
@@ -34,11 +38,23 @@ public class NuGetMutableModuleExtension extends NuGetModuleExtension implements
 		super(id, moduleRootLayer);
 	}
 
+	public void setConfigFilePath(String path)
+	{
+		if(StringUtil.isEmptyOrSpaces(path))
+		{
+			myConfigFileUrl = null;
+		}
+		else
+		{
+			myConfigFileUrl = VirtualFileManager.constructUrl(StandardFileSystems.FILE_PROTOCOL, path);
+		}
+	}
+
 	@Nullable
 	@Override
 	public JComponent createConfigurablePanel(@NotNull Runnable runnable)
 	{
-		return null;
+		return new NuGetConfigPanel(this);
 	}
 
 	@Override
@@ -50,6 +66,6 @@ public class NuGetMutableModuleExtension extends NuGetModuleExtension implements
 	@Override
 	public boolean isModified(@NotNull NuGetModuleExtension nuGetModuleExtension)
 	{
-		return myIsEnabled != nuGetModuleExtension.isEnabled();
+		return myIsEnabled != nuGetModuleExtension.isEnabled() || !Comparing.equal(myConfigFileUrl, nuGetModuleExtension.myConfigFileUrl);
 	}
 }

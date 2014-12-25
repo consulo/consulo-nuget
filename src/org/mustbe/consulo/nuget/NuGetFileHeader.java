@@ -27,14 +27,11 @@ import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.xml.XmlFile;
 import com.intellij.ui.EditorNotificationPanel;
 import com.intellij.ui.EditorNotifications;
-import com.intellij.util.xml.DomFileElement;
-import com.intellij.util.xml.DomManager;
 import lombok.val;
 
 /**
@@ -66,67 +63,69 @@ public class NuGetFileHeader extends EditorNotifications.Provider<EditorNotifica
 			return null;
 		}
 
-		val maybeXmlFile = PsiManager.getInstance(myProject).findFile(file);
-		if(!(maybeXmlFile instanceof XmlFile))
+		val moduleForPsiElement = ModuleUtilCore.findModuleForFile(file, myProject);
+		if(moduleForPsiElement == null)
 		{
 			return null;
 		}
-		DomFileElement<NuGetPackagesFile> fileElement = DomManager.getDomManager(myProject).getFileElement((XmlFile) maybeXmlFile,
-				NuGetPackagesFile.class);
-		if(fileElement != null)
+
+		val extension = ModuleUtil.getExtension(moduleForPsiElement, NuGetModuleExtension.class);
+		if(extension == null)
 		{
-			val moduleForPsiElement = ModuleUtilCore.findModuleForFile(file, myProject);
-			if(moduleForPsiElement == null)
-			{
-				return null;
-			}
-			val extension = ModuleUtil.getExtension(moduleForPsiElement, NuGetModuleExtension.class);
-			if(extension == null)
-			{
-				return null;
-			}
+			return null;
+		}
 
-			EditorNotificationPanel editorNotificationPanel = new EditorNotificationPanel();
-			editorNotificationPanel.setText("NuGet");
+		if(!Comparing.equal(file, extension.getConfigFile()))
+		{
+			return null;
+		}
 
-			val worker = extension.getWorker();
+		NuGetPackagesFile packagesFile = extension.getPackagesFile();
+		if(packagesFile == null)
+		{
+			return null;
+		}
 
-			if(!worker.isUpdateInProgress())
+		EditorNotificationPanel editorNotificationPanel = new EditorNotificationPanel();
+		editorNotificationPanel.setText("NuGet");
+
+		val worker = extension.getWorker();
+
+		if(!worker.isUpdateInProgress())
+		{
+			editorNotificationPanel.createActionLabel("Update dependencies", new Runnable()
 			{
-				editorNotificationPanel.createActionLabel("Update dependencies", new Runnable()
+				@Override
+				public void run()
 				{
-					@Override
-					public void run()
-					{
-						worker.forceUpdate();
-					}
-				});
-				editorNotificationPanel.createActionLabel("Remove NuGet support", new Runnable()
+					worker.forceUpdate();
+				}
+			});
+			editorNotificationPanel.createActionLabel("Remove NuGet support", new Runnable()
+			{
+				@Override
+				public void run()
 				{
-					@Override
-					public void run()
+					val modifiableModel = ModuleRootManager.getInstance(moduleForPsiElement).getModifiableModel();
+
+					worker.cancelTasks();
+
+					NuGetMutableModuleExtension mutableModuleExtension = modifiableModel.getExtension(NuGetMutableModuleExtension.class);
+					assert mutableModuleExtension != null;
+					mutableModuleExtension.setEnabled(false);
+
+					ApplicationManager.getApplication().runWriteAction(new Runnable()
 					{
-						val modifiableModel = ModuleRootManager.getInstance(moduleForPsiElement).getModifiableModel();
-
-						worker.cancelTasks();
-
-						NuGetMutableModuleExtension mutableModuleExtension = modifiableModel.getExtension(NuGetMutableModuleExtension.class);
-						assert mutableModuleExtension != null;
-						mutableModuleExtension.setEnabled(false);
-
-						ApplicationManager.getApplication().runWriteAction(new Runnable()
+						@Override
+						public void run()
 						{
-							@Override
-							public void run()
-							{
-								modifiableModel.commit();
-								EditorNotifications.updateAll();
-							}
-						});
-					}
-				});
-				return editorNotificationPanel;
-			}
+							modifiableModel.commit();
+							EditorNotifications.updateAll();
+						}
+					});
+				}
+			});
+			return editorNotificationPanel;
 		}
 		return null;
 	}
