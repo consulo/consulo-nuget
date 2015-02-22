@@ -42,14 +42,14 @@ public class NuGetRepositoryWorker extends NuGetBasedRepositoryWorker
 
 	@Nullable
 	@Override
-	protected VirtualFile getPackagesDir()
+	protected String getPackagesDirPath()
 	{
 		VirtualFile moduleDir = myModule.getModuleDir();
 		if(moduleDir == null)
 		{
 			return null;
 		}
-		return moduleDir.findFileByRelativePath(PACKAGES_DIR);
+		return moduleDir.getPath() + "/" + PACKAGES_DIR;
 	}
 
 	@NotNull

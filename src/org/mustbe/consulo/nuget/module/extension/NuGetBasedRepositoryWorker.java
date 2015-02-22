@@ -30,7 +30,6 @@ import com.intellij.openapi.roots.types.DocumentationOrderRootType;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.RefreshQueue;
 import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
@@ -86,7 +85,7 @@ public abstract class NuGetBasedRepositoryWorker
 	}
 
 	@Nullable
-	protected abstract VirtualFile getPackagesDir();
+	protected abstract String getPackagesDirPath();
 
 	@NotNull
 	@RequiredReadAction
@@ -108,7 +107,7 @@ public abstract class NuGetBasedRepositoryWorker
 			@Override
 			public void run(@NotNull ProgressIndicator indicator)
 			{
-				Map<String, PackageInfo> packageMap = ApplicationManager.getApplication().runReadAction(new Computable<Map<String,PackageInfo>>()
+				Map<String, PackageInfo> packageMap = ApplicationManager.getApplication().runReadAction(new Computable<Map<String, PackageInfo>>()
 				{
 					@Override
 					public Map<String, PackageInfo> compute()
@@ -125,7 +124,7 @@ public abstract class NuGetBasedRepositoryWorker
 					return;
 				}
 
-				VirtualFile packagesDir = getPackagesDir();
+				String packagesDir = getPackagesDirPath();
 				if(packagesDir == null)
 				{
 					return;
@@ -133,7 +132,7 @@ public abstract class NuGetBasedRepositoryWorker
 				Map<PackageInfo, VirtualFile> refreshQueue = new THashMap<PackageInfo, VirtualFile>();
 
 				indicator.setText("NuGet: Downloading dependencies...");
-				File packageDir = VfsUtilCore.virtualToIoFile(packagesDir);
+				File packageDir = new File(packagesDir);
 				for(Map.Entry<String, PackageInfo> entry : packageMap.entrySet())
 				{
 					String key = entry.getKey();
@@ -331,7 +330,7 @@ public abstract class NuGetBasedRepositoryWorker
 	{
 		indicator.setText("NuGet: removing old dependencies from file system");
 
-		val dir = getPackagesDir();
+		val dir = getPackagesDirPath();
 		if(dir == null)
 		{
 			return;
@@ -342,7 +341,12 @@ public abstract class NuGetBasedRepositoryWorker
 			@Override
 			public void run()
 			{
-				for(VirtualFile virtualFile : dir.getChildren())
+				VirtualFile packagesDir = LocalFileSystem.getInstance().findFileByPath(getPackagesDirPath());
+				if(packagesDir == null)
+				{
+					return;
+				}
+				for(VirtualFile virtualFile : packagesDir.getChildren())
 				{
 					if(!virtualFile.isDirectory())
 					{
