@@ -30,6 +30,7 @@ import com.intellij.openapi.roots.types.DocumentationOrderRootType;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.RefreshQueue;
 import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
@@ -91,9 +92,6 @@ public abstract class NuGetBasedRepositoryWorker
 	@RequiredReadAction
 	protected abstract Map<String, PackageInfo> getPackagesInfo();
 
-	@NotNull
-	protected abstract String getPackagesPath();
-
 	public void forceUpdate()
 	{
 		if(isUpdateInProgress())
@@ -127,10 +125,15 @@ public abstract class NuGetBasedRepositoryWorker
 					return;
 				}
 
+				VirtualFile packagesDir = getPackagesDir();
+				if(packagesDir == null)
+				{
+					return;
+				}
 				Map<PackageInfo, VirtualFile> refreshQueue = new THashMap<PackageInfo, VirtualFile>();
 
 				indicator.setText("NuGet: Downloading dependencies...");
-				File packageDir = new File(getPackagesPath(), PACKAGES_DIR);
+				File packageDir = VfsUtilCore.virtualToIoFile(packagesDir);
 				for(Map.Entry<String, PackageInfo> entry : packageMap.entrySet())
 				{
 					String key = entry.getKey();

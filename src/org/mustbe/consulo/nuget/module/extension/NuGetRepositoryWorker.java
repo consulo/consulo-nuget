@@ -76,11 +76,4 @@ public class NuGetRepositoryWorker extends NuGetBasedRepositoryWorker
 		}
 		return map;
 	}
-
-	@NotNull
-	@Override
-	protected String getPackagesPath()
-	{
-		return myModule.getModuleDirPath();
-	}
 }
