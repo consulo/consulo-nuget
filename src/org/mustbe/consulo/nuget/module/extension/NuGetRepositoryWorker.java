@@ -48,8 +48,8 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.RefreshQueue;
 import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
-import com.intellij.platform.templates.github.DownloadUtil;
 import com.intellij.ui.EditorNotifications;
+import com.intellij.util.io.DownloadUtil;
 import lombok.val;
 
 /**
