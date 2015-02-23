@@ -16,14 +16,11 @@
 
 package org.mustbe.consulo.nuget.module.extension;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.nuget.dom.NuGetPackage;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.Consumer;
 import lombok.val;
 
 /**
@@ -52,17 +49,15 @@ public class NuGetRepositoryWorker extends NuGetBasedRepositoryWorker
 		return moduleDir.getPath() + "/" + PACKAGES_DIR;
 	}
 
-	@NotNull
 	@Override
-	protected Map<String, PackageInfo> getPackagesInfo()
+	protected void loadDefinedPackages(@NotNull Consumer<PackageInfo> packageInfoConsumer)
 	{
 		val packagesFile = myExtension.getPackagesFile();
 		if(packagesFile == null)
 		{
-			return Collections.emptyMap();
+			return;
 		}
 
-		Map<String, PackageInfo> map = new TreeMap<String, PackageInfo>();
 		for(NuGetPackage nuGetPackage : packagesFile.getPackages())
 		{
 			String idValue = nuGetPackage.getId().getValue();
@@ -72,8 +67,7 @@ public class NuGetRepositoryWorker extends NuGetBasedRepositoryWorker
 			{
 				continue;
 			}
-			map.put(idValue + "." + versionValue, new PackageInfo(idValue, versionValue, targetFrameworkValue));
+			packageInfoConsumer.consume(new PackageInfo(idValue, versionValue, targetFrameworkValue));
 		}
-		return map;
 	}
 }
