@@ -274,13 +274,6 @@ public abstract class NuGetBasedRepositoryWorker
 							{
 								DownloadUtil.downloadContentToFile(indicator, downloadUrl, downloadTarget);
 
-								VirtualFile extractDirFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(extractDir);
-								if(extractDirFile == null)
-								{
-									continue;
-								}
-
-								refreshQueue.put(value, extractDirFile);
 								indicator.setText("NuGet: extracting: " + downloadTarget.getPath());
 								NuPkgUtil.extract(downloadTarget, extractDir, new FilenameFilter()
 								{
@@ -304,6 +297,14 @@ public abstract class NuGetBasedRepositoryWorker
 										"and version: " + value.getVersion(), NotificationType.WARNING));
 							}
 						}
+
+						VirtualFile extractDirFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(extractDir);
+						if(extractDirFile == null)
+						{
+							continue;
+						}
+
+						refreshQueue.put(value, extractDirFile);
 					}
 
 					RefreshQueue.getInstance().refresh(false, true, null, refreshQueue.values());
