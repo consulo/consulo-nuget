@@ -51,6 +51,12 @@ public class NuGetVersion
 					type = Type.beta;
 					build = Integer.parseInt(buildInfo.substring(5, buildInfo.length()));
 				}
+				else if(buildInfo.startsWith("rc"))
+				{
+					type = Type.rc;
+					String rcNumber = buildInfo.substring(2, buildInfo.length());
+					build = rcNumber.isEmpty() ? 0 : Integer.parseInt(rcNumber);
+				}
 				else if(buildInfo.startsWith("beta"))
 				{
 					type = Type.beta;
@@ -78,7 +84,8 @@ public class NuGetVersion
 	public enum Type
 	{
 		beta,
-		release,
+		rc,
+		release
 	}
 
 	public final int major;
@@ -142,5 +149,17 @@ public class NuGetVersion
 	public boolean equals(Object obj)
 	{
 		return obj instanceof NuGetVersion && compareTo((NuGetVersion) obj) == 0;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "NuGetVersion{" +
+				"major=" + major +
+				", minor=" + minor +
+				", bugfix=" + bugfix +
+				", type=" + type +
+				", build=" + build +
+				'}';
 	}
 }
