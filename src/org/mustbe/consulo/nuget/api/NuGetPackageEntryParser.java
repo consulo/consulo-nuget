@@ -24,7 +24,6 @@ import java.util.TreeMap;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.dotnet.util.ArrayUtil2;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.SmartList;
 
@@ -79,53 +78,7 @@ public class NuGetPackageEntryParser
 						String versionInfo = tokenizer.nextToken();
 						String frameworkName = tokenizer.hasMoreTokens() ? tokenizer.nextToken() : null;
 
-						NuGetDependencyVersionInfo dependencyVersionInfo = null;
-						assert !versionInfo.isEmpty() : versionInfo;
-						if(versionInfo.charAt(0) == '[' || versionInfo.charAt(0) == '(')
-						{
-							int indexOfComma = versionInfo.indexOf(',');
-
-							List<String> versionList = StringUtil.split(versionInfo, ",");
-							NuGetCompareType minCompare = NuGetCompareType.EQ;
-							NuGetCompareType maxCompare = NuGetCompareType.EQ;
-
-							NuGetVersion minVersion = null;
-							NuGetVersion maxVersion = null;
-
-							String min = ArrayUtil2.safeGet(versionList, 0);
-							if(min != null)
-							{
-								min = min.trim();
-								minCompare = toCompare(min.charAt(0));
-								if(minCompare != NuGetCompareType.EQ)
-								{
-									min = min.substring(1, min.length());
-								}
-								minVersion = NuGetVersion.parseVersion(min);
-							}
-							String max = ArrayUtil2.safeGet(versionList, 1);
-							if(max != null)
-							{
-								max = max.trim();
-								maxCompare = toCompare(max.charAt(max.length() - 1));
-								if(maxCompare != NuGetCompareType.EQ)
-								{
-									max = max.substring(0, max.length() - 1);
-								}
-								maxVersion = NuGetVersion.parseVersion(max);
-							}
-							else if(indexOfComma == -1)
-							{
-								// if no separator max == min, version like [1.0]
-								maxVersion = minVersion;
-							}
-							dependencyVersionInfo = new NuGetDependencyVersionInfoWithBounds(minCompare, minVersion, maxCompare, maxVersion);
-						}
-						else
-						{
-							NuGetVersion version = NuGetVersion.parseVersion(versionInfo);
-							dependencyVersionInfo = new NuGetSimpleDependencyVersionInfo(version);
-						}
+						NuGetDependencyVersionInfo dependencyVersionInfo = NuGetDependencyVersionInfoParser.parse(versionInfo);
 						dependencies.add(new NuGetDependency(depId, dependencyVersionInfo, frameworkName));
 					}
 				}
@@ -137,21 +90,5 @@ public class NuGetPackageEntryParser
 			}
 		}
 		return map;
-	}
-
-	private static NuGetCompareType toCompare(char c)
-	{
-		switch(c)
-		{
-			case '[':
-				return NuGetCompareType.GTEQ;
-			case '(':
-				return NuGetCompareType.GT;
-			case ']':
-				return NuGetCompareType.LTEQ;
-			case ')':
-				return NuGetCompareType.LT;
-		}
-		return NuGetCompareType.EQ;
 	}
 }

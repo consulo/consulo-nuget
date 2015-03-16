@@ -19,6 +19,7 @@ package nuget.entry;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mustbe.consulo.nuget.api.NuGetCompareType;
+import org.mustbe.consulo.nuget.api.NuGetDependencyVersionInfoParser;
 import org.mustbe.consulo.nuget.api.NuGetDependencyVersionInfoWithBounds;
 import org.mustbe.consulo.nuget.api.NuGetVersion;
 
@@ -63,5 +64,11 @@ public class VersionTest extends Assert
 		assertTrue(NuGetVersion.parseVersion("4.0.10-alpha-2223").equals(new NuGetVersion(4, 0, 10, NuGetVersion.BuildType.alpha, 2223)));
 		assertTrue(NuGetVersion.parseVersion("1.0.0-beta1-20141031-01'").equals(new NuGetVersion(1, 0, 0, NuGetVersion.BuildType.beta, 1)));
 		assertTrue(NuGetVersion.parseVersion("3.0").equals(new NuGetVersion(3, 0, 0)));
+	}
+
+	@Test
+	public void testDependencyVersion()
+	{
+		NuGetDependencyVersionInfoParser.parse("[1.0.0]");
 	}
 }
