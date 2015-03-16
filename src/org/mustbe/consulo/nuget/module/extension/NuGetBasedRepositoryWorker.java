@@ -480,8 +480,11 @@ public abstract class NuGetBasedRepositoryWorker
 							String frameworkName = tokenizer.hasMoreTokens() ? tokenizer.nextToken() : null;
 
 							NuGetDependencyVersionInfo dependencyVersionInfo = null;
-							if(versionInfo.contains(","))
+							assert !versionInfo.isEmpty() : versionInfo;
+							if(versionInfo.charAt(0) == '[' || versionInfo.charAt(0) == '(')
 							{
+								int indexOfComma = version.indexOf(',');
+
 								List<String> versionList = StringUtil.split(versionInfo, ",");
 								NuGetCompareType minCompare = NuGetCompareType.EQ;
 								NuGetCompareType maxCompare = NuGetCompareType.EQ;
@@ -510,6 +513,11 @@ public abstract class NuGetBasedRepositoryWorker
 										max = max.substring(0, max.length() - 1);
 									}
 									maxVersion = NuGetVersion.parseVersion(max);
+								}
+								else if(indexOfComma == -1)
+								{
+									// if no separator max == min, version like [1.0]
+									maxVersion = minVersion;
 								}
 								dependencyVersionInfo = new NuGetDependencyVersionInfoWithBounds(minCompare, minVersion, maxCompare, maxVersion);
 							}
