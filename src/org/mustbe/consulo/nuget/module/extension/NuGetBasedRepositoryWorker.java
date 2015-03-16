@@ -264,40 +264,45 @@ public abstract class NuGetBasedRepositoryWorker
 						}
 
 						val extractDir = new File(packageDir, key);
-						val downloadTarget = new File(extractDir, value.getId() + "." + value.getVersion() + ".nupkg");
-
-						FileUtil.createParentDirs(downloadTarget);
-
-						try
+						if(!extractDir.exists())
 						{
-							DownloadUtil.downloadContentToFile(indicator, downloadUrl, downloadTarget);
+							val downloadTarget = new File(extractDir, value.getId() + "." + value.getVersion() + ".nupkg");
 
-							VirtualFile extractDirFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(extractDir);
-							if(extractDirFile == null)
-							{
-								continue;
-							}
+							FileUtil.createParentDirs(downloadTarget);
 
-							refreshQueue.put(value, extractDirFile);
-							indicator.setText("NuGet: extracting: " + downloadTarget.getPath());
-							NuPkgUtil.extract(downloadTarget, extractDir, new FilenameFilter()
+							try
 							{
-								@Override
-								public boolean accept(File dir, String name)
+								DownloadUtil.downloadContentToFile(indicator, downloadUrl, downloadTarget);
+
+								VirtualFile extractDirFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(extractDir);
+								if(extractDirFile == null)
 								{
-									File parentFile = dir.getParentFile();
-									return parentFile != null && parentFile.getName().equals("lib") && FileUtil.filesEqual(extractDir,
-											parentFile.getParentFile());
+									continue;
 								}
-							}, true);
-						}
-						catch(IOException e)
-						{
-							FileUtil.delete(downloadTarget);
 
-							Notifications.Bus.notify(new Notification("NuGet", "Warning", "Fail to download dependency with id: " + value.getId() +
-									" " +
-									"and version: " + value.getVersion(), NotificationType.WARNING));
+								refreshQueue.put(value, extractDirFile);
+								indicator.setText("NuGet: extracting: " + downloadTarget.getPath());
+								NuPkgUtil.extract(downloadTarget, extractDir, new FilenameFilter()
+								{
+									@Override
+									public boolean accept(File dir, String name)
+									{
+										File parentFile = dir.getParentFile();
+										return parentFile != null && parentFile.getName().equals("lib") && FileUtil.filesEqual(extractDir,
+												parentFile.getParentFile());
+
+									}
+								}, true);
+							}
+							catch(IOException e)
+							{
+								FileUtil.delete(downloadTarget);
+
+								Notifications.Bus.notify(new Notification("NuGet", "Warning", "Fail to download dependency with id: " + value.getId
+										() +
+										" " +
+										"and version: " + value.getVersion(), NotificationType.WARNING));
+							}
 						}
 					}
 
@@ -422,7 +427,8 @@ public abstract class NuGetBasedRepositoryWorker
 	@Nullable
 	private Collection<String> getVersionsForId(@NotNull final NuGetRepositoryManager repositoryManager,
 			@NotNull final ProgressIndicator indicator,
-			@NotNull NuGetRequestQueue requestQueue, @NotNull String id)
+			@NotNull NuGetRequestQueue requestQueue,
+			@NotNull String id)
 	{
 		return requestPackageEntries(repositoryManager, indicator, requestQueue, id).keySet();
 	}
