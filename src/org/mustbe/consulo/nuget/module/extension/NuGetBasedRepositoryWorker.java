@@ -234,12 +234,15 @@ public abstract class NuGetBasedRepositoryWorker
 
 					NuGetRepositoryManager repositoryManager = getRepositoryManager();
 
+					NuGetRequestQueue requestQueue = new NuGetRequestQueue();
+
 					for(PackageInfo packageInfo : packageMap.values())
 					{
-						packageInfo.setPackageEntry(resolvePackageEntry(repositoryManager, indicator, packageInfo.myId, packageInfo.myVersion));
+						packageInfo.setPackageEntry(resolvePackageEntry(repositoryManager, indicator, requestQueue, packageInfo.myId,
+								packageInfo.myVersion));
 					}
 
-					resolveDependencies(indicator, repositoryManager, packageInfoConsumer, packageMap);
+					resolveDependencies(indicator, requestQueue, repositoryManager, packageInfoConsumer, packageMap);
 
 					removeInvalidDependenciesFromFileSystem(packageMap, indicator);
 					removeInvalidDependenciesFromModule(packageMap, indicator);
@@ -305,7 +308,7 @@ public abstract class NuGetBasedRepositoryWorker
 							FileUtil.delete(downloadTarget);
 
 							Notifications.Bus.notify(new Notification("NuGet", "Warning", "Fail to download dependency with id: " + value.getId() +
-							" " +
+									" " +
 									"and version: " + value.getVersion(), NotificationType.WARNING));
 						}
 					}
@@ -336,6 +339,7 @@ public abstract class NuGetBasedRepositoryWorker
 	}
 
 	public void resolveDependencies(@NotNull ProgressIndicator indicator,
+			@NotNull NuGetRequestQueue requestQueue,
 			@NotNull NuGetRepositoryManager manager,
 			@NotNull Consumer<PackageInfo> packageInfoConsumer,
 			@NotNull Map<String, PackageInfo> map)
@@ -344,11 +348,12 @@ public abstract class NuGetBasedRepositoryWorker
 
 		for(PackageInfo packageInfo : packageInfos)
 		{
-			resolveDependenciesImpl(indicator, manager, packageInfoConsumer, map, packageInfo);
+			resolveDependenciesImpl(indicator, requestQueue, manager, packageInfoConsumer, map, packageInfo);
 		}
 	}
 
 	private void resolveDependenciesImpl(@NotNull ProgressIndicator indicator,
+			@NotNull NuGetRequestQueue requestQueue,
 			@NotNull NuGetRepositoryManager manager,
 			@NotNull Consumer<PackageInfo> packageInfoConsumer,
 			@NotNull Map<String, PackageInfo> map,
@@ -369,7 +374,7 @@ public abstract class NuGetBasedRepositoryWorker
 				continue;
 			}
 
-			String[] versionsForId = getVersionsForId(indicator, packageEntry.getRepoUrl(), dependency.getId());
+			String[] versionsForId = getVersionsForId(indicator, requestQueue, packageEntry.getRepoUrl(), dependency.getId());
 			if(versionsForId != null)
 			{
 				versionsForId = ArrayUtil.reverseArray(versionsForId);
@@ -399,10 +404,10 @@ public abstract class NuGetBasedRepositoryWorker
 					frameworks = new String[]{dependency.getFramework()};
 				}
 				PackageInfo newPackageInfo = new PackageInfo(dependency.getId(), correctVersion, frameworks);
-				newPackageInfo.setPackageEntry(resolvePackageEntry(manager, indicator, dependency.getId(), correctVersion));
+				newPackageInfo.setPackageEntry(resolvePackageEntry(manager, indicator, requestQueue, dependency.getId(), correctVersion));
 				packageInfoConsumer.consume(newPackageInfo);
 
-				resolveDependenciesImpl(indicator, manager, packageInfoConsumer, map, newPackageInfo);
+				resolveDependenciesImpl(indicator, requestQueue, manager, packageInfoConsumer, map, newPackageInfo);
 			}
 		}
 	}
@@ -422,6 +427,7 @@ public abstract class NuGetBasedRepositoryWorker
 	@Nullable
 	protected NuGetPackageEntry resolvePackageEntry(@NotNull final NuGetRepositoryManager repositoryManager,
 			@NotNull final ProgressIndicator indicator,
+			@NotNull final NuGetRequestQueue requestQueue,
 			@NotNull final String id,
 			@NotNull final String version)
 	{
@@ -430,8 +436,8 @@ public abstract class NuGetBasedRepositoryWorker
 			try
 			{
 				indicator.setText("NuGet: Getting info about " + id + ":" + version + " package from " + url);
-				Element element = HttpRequests.request(String.format(ourPackagesPattern, url, id, version)).accept("*/*").gzip(false).connect(new
-																																					  HttpRequests.RequestProcessor<Element>()
+				Element element = requestQueue.request(String.format(ourPackagesPattern, url, id, version),
+						new HttpRequests.RequestProcessor<Element>()
 				{
 					@Override
 					public Element process(@NotNull HttpRequests.Request request) throws IOException
@@ -536,10 +542,6 @@ public abstract class NuGetBasedRepositoryWorker
 
 				return new NuGetPackageEntry(id, version, contentType, contentUrl, dependencies, url);
 			}
-			catch(IOException e)
-			{
-				LOGGER.error(e);
-			}
 			finally
 			{
 				indicator.setText(null);
@@ -549,13 +551,15 @@ public abstract class NuGetBasedRepositoryWorker
 	}
 
 	@Nullable
-	private String[] getVersionsForId(@NotNull final ProgressIndicator indicator, @NotNull String url, @NotNull String id)
+	private String[] getVersionsForId(@NotNull final ProgressIndicator indicator,
+			@NotNull NuGetRequestQueue requestQueue,
+			@NotNull String url,
+			@NotNull String id)
 	{
 		try
 		{
 			indicator.setText("NuGet: getting versions for " + id + " package from " + url);
-			return HttpRequests.request(String.format(ourVersionsPattern, url, id)).accept("*/*").gzip(false).connect(new HttpRequests
-					.RequestProcessor<String[]>()
+			return requestQueue.request(String.format(ourVersionsPattern, url, id), new HttpRequests.RequestProcessor<String[]>()
 			{
 				@Override
 				public String[] process(@NotNull HttpRequests.Request request) throws IOException
@@ -567,11 +571,6 @@ public abstract class NuGetBasedRepositoryWorker
 					return new Gson().fromJson(request.getReader(indicator), String[].class);
 				}
 			});
-		}
-		catch(IOException e)
-		{
-			LOGGER.error(e);
-			return null;
 		}
 		finally
 		{
