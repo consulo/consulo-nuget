@@ -56,8 +56,12 @@ public class VersionTest extends Assert
 	@Test
 	public void testBuildNumber()
 	{
-		assertTrue(NuGetVersion.parseVersion("4.0.10-beta2223").equals(new NuGetVersion(4, 0, 10, NuGetVersion.Type.beta, 2223)));
-		assertTrue(NuGetVersion.parseVersion("4.0.10-beta-2223").equals(new NuGetVersion(4, 0, 10, NuGetVersion.Type.beta, 2223)));
+		assertTrue(NuGetVersion.parseVersion("0.6.4033103-beta").equals(new NuGetVersion(0, 6, 4033103, NuGetVersion.BuildType.beta, 0)));
+		assertTrue(NuGetVersion.parseVersion("4.0.10-beta2223").equals(new NuGetVersion(4, 0, 10, NuGetVersion.BuildType.beta, 2223)));
+		assertTrue(NuGetVersion.parseVersion("4.0.10-beta-2223").equals(new NuGetVersion(4, 0, 10, NuGetVersion.BuildType.beta, 2223)));
+		assertTrue(NuGetVersion.parseVersion("4.0.10-alpha2223").equals(new NuGetVersion(4, 0, 10, NuGetVersion.BuildType.alpha, 2223)));
+		assertTrue(NuGetVersion.parseVersion("4.0.10-alpha-2223").equals(new NuGetVersion(4, 0, 10, NuGetVersion.BuildType.alpha, 2223)));
+		assertTrue(NuGetVersion.parseVersion("1.0.0-beta1-20141031-01'").equals(new NuGetVersion(1, 0, 0, NuGetVersion.BuildType.beta, 1)));
 		assertTrue(NuGetVersion.parseVersion("3.0").equals(new NuGetVersion(3, 0, 0)));
 	}
 }
