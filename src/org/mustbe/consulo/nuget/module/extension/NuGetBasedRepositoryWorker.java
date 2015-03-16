@@ -19,6 +19,7 @@ import org.jdom.Namespace;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.RequiredReadAction;
+import org.mustbe.consulo.dotnet.dll.DotNetModuleFileType;
 import org.mustbe.consulo.dotnet.util.ArrayUtil2;
 import org.mustbe.consulo.nuget.api.NuGetCompareType;
 import org.mustbe.consulo.nuget.api.NuGetDependency;
@@ -29,6 +30,7 @@ import org.mustbe.consulo.nuget.api.NuGetSimpleDependencyVersionInfo;
 import org.mustbe.consulo.nuget.api.NuGetVersion;
 import org.mustbe.consulo.nuget.util.NuPkgUtil;
 import com.google.gson.Gson;
+import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
@@ -598,7 +600,7 @@ public abstract class NuGetBasedRepositoryWorker
 	{
 		indicator.setText("NuGet: add dependencies to module");
 
-		final ModifiableRootModel modifiableModel = ApplicationManager.getApplication().runReadAction(new Computable<ModifiableRootModel>()
+		final ModifiableRootModel modifiableRootModel = ApplicationManager.getApplication().runReadAction(new Computable<ModifiableRootModel>()
 		{
 			@Override
 			public ModifiableRootModel compute()
@@ -618,22 +620,26 @@ public abstract class NuGetBasedRepositoryWorker
 				continue;
 			}
 
-			if(addLibraryFiles(packageInfo, libraryDirectory, modifiableModel))
-			{
-				continue;
-			}
+			LibraryTable moduleLibraryTable = modifiableRootModel.getModuleLibraryTable();
+			Library library = moduleLibraryTable.createLibrary(NUGET_LIBRARY_PREFIX + packageInfo.getId() + "." + packageInfo.getVersion());
+			Library.ModifiableModel modifiableModel = library.getModifiableModel();
 
-			for(String targetFramework : packageInfo.getTargetFrameworks())
+			if(!addLibraryFiles(libraryDirectory, modifiableModel))
 			{
-				VirtualFile targetFrameworkLib = libraryDirectory.findFileByRelativePath(targetFramework);
-				if(targetFrameworkLib == null)
+				for(String targetFramework : packageInfo.getTargetFrameworks())
 				{
-					continue;
-				}
+					VirtualFile targetFrameworkLib = libraryDirectory.findFileByRelativePath(targetFramework);
+					if(targetFrameworkLib == null)
+					{
+						continue;
+					}
 
-				addLibraryFiles(packageInfo, targetFrameworkLib, modifiableModel);
-				break;
+					addLibraryFiles(targetFrameworkLib, modifiableModel);
+					break;
+				}
 			}
+
+			modifiableModel.commit();
 		}
 
 		new WriteAction<Object>()
@@ -641,40 +647,34 @@ public abstract class NuGetBasedRepositoryWorker
 			@Override
 			protected void run(Result<Object> result) throws Throwable
 			{
-				modifiableModel.commit();
+				modifiableRootModel.commit();
 			}
 		}.execute();
 		indicator.setText(null);
 	}
 
-	private static boolean addLibraryFiles(PackageInfo packageInfo, VirtualFile libraryDir, ModifiableRootModel modifiableRootModel)
+	private static boolean addLibraryFiles(VirtualFile libraryDir, Library.ModifiableModel modifiableModel)
 	{
-		String libraryName = packageInfo.getId() + ".dll";
-		String docFileName = packageInfo.getId() + ".xml";
-
-		VirtualFile libraryFile = libraryDir.findFileByRelativePath(libraryName);
-		if(libraryFile != null)
+		boolean added = false;
+		for(VirtualFile virtualFile : libraryDir.getChildren())
 		{
-			VirtualFile archiveRootForLocalFile = ArchiveVfsUtil.getArchiveRootForLocalFile(libraryFile);
-			if(archiveRootForLocalFile == null)
+			if(virtualFile.getFileType() == DotNetModuleFileType.INSTANCE)
 			{
-				return false;
+				VirtualFile archiveRootForLocalFile = ArchiveVfsUtil.getArchiveRootForLocalFile(virtualFile);
+				if(archiveRootForLocalFile == null)
+				{
+					continue;
+				}
+				added = true;
+				modifiableModel.addRoot(archiveRootForLocalFile, BinariesOrderRootType.getInstance());
 			}
-			LibraryTable moduleLibraryTable = modifiableRootModel.getModuleLibraryTable();
-
-			Library library = moduleLibraryTable.createLibrary(NUGET_LIBRARY_PREFIX + packageInfo.getId() + "." + packageInfo.getVersion());
-			Library.ModifiableModel modifiableModel = library.getModifiableModel();
-			modifiableModel.addRoot(archiveRootForLocalFile, BinariesOrderRootType.getInstance());
-
-			VirtualFile docFile = libraryDir.findFileByRelativePath(docFileName);
-			if(docFile != null)
+			else if(virtualFile.getFileType() == XmlFileType.INSTANCE)
 			{
-				modifiableModel.addRoot(docFile, DocumentationOrderRootType.getInstance());
+				modifiableModel.addRoot(virtualFile, DocumentationOrderRootType.getInstance());
 			}
-			modifiableModel.commit();
-			return true;
 		}
-		return false;
+
+		return added;
 	}
 
 	protected void removeInvalidDependenciesFromModule(Map<String, PackageInfo> packages, ProgressIndicator indicator)
