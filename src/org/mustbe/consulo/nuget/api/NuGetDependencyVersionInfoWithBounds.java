@@ -17,7 +17,6 @@
 package org.mustbe.consulo.nuget.api;
 
 import org.jetbrains.annotations.NotNull;
-import com.intellij.openapi.util.Version;
 
 /**
  * @author VISTALL
@@ -79,5 +78,16 @@ public class NuGetDependencyVersionInfoWithBounds implements NuGetDependencyVers
 				return compareValue < 0;
 		}
 		return false;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "NuGetDependencyVersionInfoWithBounds{" +
+				"myMinCompareType=" + myMinCompareType +
+				", myMinVersion=" + myMinVersion +
+				", myMaxCompareType=" + myMaxCompareType +
+				", myMaxVersion=" + myMaxVersion +
+				'}';
 	}
 }

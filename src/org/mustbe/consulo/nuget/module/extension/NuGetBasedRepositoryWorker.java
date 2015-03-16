@@ -5,32 +5,27 @@ import gnu.trove.THashMap;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.consulo.lombok.annotations.Logger;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.Namespace;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.dotnet.dll.DotNetModuleFileType;
-import org.mustbe.consulo.dotnet.util.ArrayUtil2;
-import org.mustbe.consulo.nuget.api.NuGetCompareType;
 import org.mustbe.consulo.nuget.api.NuGetDependency;
-import org.mustbe.consulo.nuget.api.NuGetDependencyVersionInfo;
-import org.mustbe.consulo.nuget.api.NuGetDependencyVersionInfoWithBounds;
 import org.mustbe.consulo.nuget.api.NuGetPackageEntry;
-import org.mustbe.consulo.nuget.api.NuGetSimpleDependencyVersionInfo;
+import org.mustbe.consulo.nuget.api.NuGetPackageEntryParser;
 import org.mustbe.consulo.nuget.api.NuGetTargetFrameworkInfo;
 import org.mustbe.consulo.nuget.api.NuGetVersion;
 import org.mustbe.consulo.nuget.util.NuPkgUtil;
-import com.google.gson.Gson;
+import com.intellij.BundleBase;
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
@@ -52,7 +47,6 @@ import com.intellij.openapi.roots.types.DocumentationOrderRootType;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.JDOMUtil;
 import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.RefreshQueue;
@@ -60,7 +54,6 @@ import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
 import com.intellij.ui.EditorNotifications;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.Consumer;
-import com.intellij.util.SmartList;
 import com.intellij.util.io.DownloadUtil;
 import com.intellij.util.io.HttpRequests;
 import lombok.val;
@@ -150,13 +143,7 @@ public abstract class NuGetBasedRepositoryWorker
 	public static final String NUGET_LIBRARY_PREFIX = "nuget: ";
 	public static final String PACKAGES_DIR = "packages";
 
-	private static final Namespace ourAtomNamespace = Namespace.getNamespace("http://www.w3.org/2005/Atom");
-	private static final Namespace ourDataServicesMetadataNamespace = Namespace.getNamespace("m",
-			"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata");
-	private static final Namespace ourDataServicesNamespace = Namespace.getNamespace("d", "http://schemas.microsoft.com/ado/2007/08/dataservices");
-
-	private static final String ourPackagesPattern = "%s/Packages(Id='%s',Version='%s')";
-	private static final String ourVersionsPattern = "%s/package-versions/%s";
+	private static final String ourPackagesFilterPattern = "{0}/Packages()?$filter=Id%20eq%20%27{1}%27&includePrerelease=true";
 
 	protected final AtomicBoolean myProgress = new AtomicBoolean();
 	protected final Module myModule;
@@ -375,41 +362,38 @@ public abstract class NuGetBasedRepositoryWorker
 				continue;
 			}
 
-			String[] versionsForId = getVersionsForId(indicator, requestQueue, packageEntry.getRepoUrl(), dependency.getId());
-			if(versionsForId != null)
+			Collection<String> temp = getVersionsForId(manager, indicator, requestQueue, dependency.getId());
+			String[] versionsForId = ArrayUtil.reverseArray(ArrayUtil.toStringArray(temp));
+
+			String correctVersion = null;
+			for(String s : versionsForId)
 			{
-				versionsForId = ArrayUtil.reverseArray(versionsForId);
-
-				String correctVersion = null;
-				for(String s : versionsForId)
+				if(dependency.getDependencyVersionInfo().is(NuGetVersion.parseVersion(s)))
 				{
-					if(dependency.getDependencyVersionInfo().is(NuGetVersion.parseVersion(s)))
-					{
-						correctVersion = s;
-						break;
-					}
+					correctVersion = s;
+					break;
 				}
-
-				if(correctVersion == null)
-				{
-					continue;
-				}
-
-				String[] frameworks;
-				if(dependency.getFramework() == null)
-				{
-					frameworks = packageInfo.getTargetFrameworks();
-				}
-				else
-				{
-					frameworks = new String[]{dependency.getFramework()};
-				}
-				PackageInfo newPackageInfo = new PackageInfo(dependency.getId(), correctVersion, frameworks);
-				newPackageInfo.setPackageEntry(resolvePackageEntry(manager, indicator, requestQueue, dependency.getId(), correctVersion));
-				packageInfoConsumer.consume(newPackageInfo);
-
-				resolveDependenciesImpl(indicator, requestQueue, manager, packageInfoConsumer, map, newPackageInfo);
 			}
+
+			if(correctVersion == null)
+			{
+				continue;
+			}
+
+			String[] frameworks;
+			if(dependency.getFramework() == null)
+			{
+				frameworks = packageInfo.getTargetFrameworks();
+			}
+			else
+			{
+				frameworks = new String[]{dependency.getFramework()};
+			}
+			PackageInfo newPackageInfo = new PackageInfo(dependency.getId(), correctVersion, frameworks);
+			newPackageInfo.setPackageEntry(resolvePackageEntry(manager, indicator, requestQueue, dependency.getId(), correctVersion));
+			packageInfoConsumer.consume(newPackageInfo);
+
+			resolveDependenciesImpl(indicator, requestQueue, manager, packageInfoConsumer, map, newPackageInfo);
 		}
 	}
 
@@ -432,16 +416,35 @@ public abstract class NuGetBasedRepositoryWorker
 			@NotNull final String id,
 			@NotNull final String version)
 	{
-		for(String url : repositoryManager.getRepositories())
+		return requestPackageEntries(repositoryManager, indicator, requestQueue, id).get(version);
+	}
+
+	@Nullable
+	private Collection<String> getVersionsForId(@NotNull final NuGetRepositoryManager repositoryManager,
+			@NotNull final ProgressIndicator indicator,
+			@NotNull NuGetRequestQueue requestQueue, @NotNull String id)
+	{
+		return requestPackageEntries(repositoryManager, indicator, requestQueue, id).keySet();
+	}
+
+	@NotNull
+	protected Map<String, NuGetPackageEntry> requestPackageEntries(@NotNull final NuGetRepositoryManager repositoryManager,
+			@NotNull final ProgressIndicator indicator,
+			@NotNull final NuGetRequestQueue requestQueue,
+			@NotNull final String id)
+	{
+		for(final String url : repositoryManager.getRepositories())
 		{
 			try
 			{
-				indicator.setText("NuGet: Getting info about " + id + ":" + version + " package from " + url);
-				Element element = requestQueue.request(String.format(ourPackagesPattern, url, id, version),
-						new HttpRequests.RequestProcessor<Element>()
+				indicator.setText("NuGet: Getting info about " + id + " package from " + url);
+
+				Map<String, NuGetPackageEntry> map = requestQueue.request(BundleBase.format(ourPackagesFilterPattern, url, id),
+						new HttpRequests.RequestProcessor<Map<String, NuGetPackageEntry>>()
+
 				{
 					@Override
-					public Element process(@NotNull HttpRequests.Request request) throws IOException
+					public Map<String, NuGetPackageEntry> process(@NotNull HttpRequests.Request request) throws IOException
 					{
 						if(!request.isSuccessful())
 						{
@@ -449,7 +452,8 @@ public abstract class NuGetBasedRepositoryWorker
 						}
 						try
 						{
-							return JDOMUtil.loadDocument(request.readBytes(indicator)).getRootElement();
+							Element rootElement = JDOMUtil.loadDocument(request.readBytes(indicator)).getRootElement();
+							return NuGetPackageEntryParser.parse(rootElement, id, url);
 						}
 						catch(JDOMException e)
 						{
@@ -458,141 +462,19 @@ public abstract class NuGetBasedRepositoryWorker
 					}
 				});
 
-				if(!"entry".equals(element.getName()))
+				if(map == null)
 				{
-					return null;
+					continue;
 				}
 
-				String contentType = null;
-				String contentUrl = null;
-				Element content = element.getChild("content", ourAtomNamespace);
-				if(content != null)
-				{
-					contentType = content.getAttributeValue("type");
-					contentUrl = content.getAttributeValue("src");
-				}
-
-				List<NuGetDependency> dependencies = new SmartList<NuGetDependency>();
-
-				Element properties = element.getChild("properties", ourDataServicesMetadataNamespace);
-				if(properties != null)
-				{
-					Element dependenciesElement = properties.getChild("Dependencies", ourDataServicesNamespace);
-					if(dependenciesElement != null)
-					{
-						String textTrim = dependenciesElement.getTextTrim();
-						List<String> split = StringUtil.split(textTrim, "|");
-
-						for(String dependencyData : split)
-						{
-							StringTokenizer tokenizer = new StringTokenizer(dependencyData, ":");
-							String depId = tokenizer.nextToken();
-							String versionInfo = tokenizer.nextToken();
-							String frameworkName = tokenizer.hasMoreTokens() ? tokenizer.nextToken() : null;
-
-							NuGetDependencyVersionInfo dependencyVersionInfo = null;
-							assert !versionInfo.isEmpty() : versionInfo;
-							if(versionInfo.charAt(0) == '[' || versionInfo.charAt(0) == '(')
-							{
-								int indexOfComma = version.indexOf(',');
-
-								List<String> versionList = StringUtil.split(versionInfo, ",");
-								NuGetCompareType minCompare = NuGetCompareType.EQ;
-								NuGetCompareType maxCompare = NuGetCompareType.EQ;
-
-								NuGetVersion minVersion = null;
-								NuGetVersion maxVersion = null;
-
-								String min = ArrayUtil2.safeGet(versionList, 0);
-								if(min != null)
-								{
-									min = min.trim();
-									minCompare = toCompare(min.charAt(0));
-									if(minCompare != NuGetCompareType.EQ)
-									{
-										min = min.substring(1, min.length());
-									}
-									minVersion = NuGetVersion.parseVersion(min);
-								}
-								String max = ArrayUtil2.safeGet(versionList, 1);
-								if(max != null)
-								{
-									max = max.trim();
-									maxCompare = toCompare(max.charAt(max.length() - 1));
-									if(maxCompare != NuGetCompareType.EQ)
-									{
-										max = max.substring(0, max.length() - 1);
-									}
-									maxVersion = NuGetVersion.parseVersion(max);
-								}
-								else if(indexOfComma == -1)
-								{
-									// if no separator max == min, version like [1.0]
-									maxVersion = minVersion;
-								}
-								dependencyVersionInfo = new NuGetDependencyVersionInfoWithBounds(minCompare, minVersion, maxCompare, maxVersion);
-							}
-							else
-							{
-								dependencyVersionInfo = new NuGetSimpleDependencyVersionInfo(NuGetVersion.parseVersion(versionInfo));
-							}
-							dependencies.add(new NuGetDependency(depId, dependencyVersionInfo, frameworkName));
-						}
-					}
-				}
-
-				return new NuGetPackageEntry(id, version, contentType, contentUrl, dependencies, url);
+				return map;
 			}
 			finally
 			{
 				indicator.setText(null);
 			}
 		}
-		return null;
-	}
-
-	@Nullable
-	private String[] getVersionsForId(@NotNull final ProgressIndicator indicator,
-			@NotNull NuGetRequestQueue requestQueue,
-			@NotNull String url,
-			@NotNull String id)
-	{
-		try
-		{
-			indicator.setText("NuGet: getting versions for " + id + " package from " + url);
-			return requestQueue.request(String.format(ourVersionsPattern, url, id), new HttpRequests.RequestProcessor<String[]>()
-			{
-				@Override
-				public String[] process(@NotNull HttpRequests.Request request) throws IOException
-				{
-					if(!request.isSuccessful())
-					{
-						return null;
-					}
-					return new Gson().fromJson(request.getReader(indicator), String[].class);
-				}
-			});
-		}
-		finally
-		{
-			indicator.setText(null);
-		}
-	}
-
-	private NuGetCompareType toCompare(char c)
-	{
-		switch(c)
-		{
-			case '[':
-				return NuGetCompareType.GTEQ;
-			case '(':
-				return NuGetCompareType.GT;
-			case ']':
-				return NuGetCompareType.LTEQ;
-			case ')':
-				return NuGetCompareType.LT;
-		}
-		return NuGetCompareType.EQ;
+		return Collections.emptyMap();
 	}
 
 
@@ -628,7 +510,8 @@ public abstract class NuGetBasedRepositoryWorker
 			if(!addLibraryFiles(libraryDirectory, modifiableModel))
 			{
 				VirtualFile[] children = libraryDirectory.getChildren();
-				mainLoop:for(VirtualFile versionFrameworkLib : children)
+				mainLoop:
+				for(VirtualFile versionFrameworkLib : children)
 				{
 					if(versionFrameworkLib.isDirectory())
 					{

@@ -36,4 +36,12 @@ public class NuGetSimpleDependencyVersionInfo implements NuGetDependencyVersionI
 	{
 		return myVersion.compareTo(version) == 0;
 	}
+
+	@Override
+	public String toString()
+	{
+		return "NuGetSimpleDependencyVersionInfo{" +
+				"myVersion=" + myVersion +
+				'}';
+	}
 }
