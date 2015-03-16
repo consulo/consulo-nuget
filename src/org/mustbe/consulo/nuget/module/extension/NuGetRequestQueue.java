@@ -49,8 +49,7 @@ public class NuGetRequestQueue
 		}
 		catch(IOException e)
 		{
-			System.out.println(url);
-			//LOGGER.error(e);
+			LOGGER.warn("Failed to execute url: " + url, e);
 		}
 
 		myCache.put(url, value);
