@@ -30,6 +30,8 @@
 	<extensions defaultExtensionNs="com.intellij">
 		<fileTypeFactory implementation="org.mustbe.consulo.nuget.NuGetFileTypeFactory" />
 
+		<errorHandler implementation="com.intellij.diagnostic.ITNReporter" />
+
 		<editorNotificationProvider implementation="org.mustbe.consulo.nuget.NuGetFileHeader" />
 	</extensions>
 </idea-plugin>
