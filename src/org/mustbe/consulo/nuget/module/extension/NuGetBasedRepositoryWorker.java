@@ -33,6 +33,8 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.Result;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
@@ -634,14 +636,14 @@ public abstract class NuGetBasedRepositoryWorker
 			}
 		}
 
-		invokeWriteAction(new Runnable()
+		new WriteAction<Object>()
 		{
 			@Override
-			public void run()
+			protected void run(Result<Object> result) throws Throwable
 			{
 				modifiableModel.commit();
 			}
-		});
+		}.execute();
 		indicator.setText(null);
 	}
 
@@ -713,14 +715,15 @@ public abstract class NuGetBasedRepositoryWorker
 			}
 		}
 
-		invokeWriteAction(new Runnable()
+		new WriteAction<Object>()
 		{
 			@Override
-			public void run()
+			protected void run(Result<Object> result) throws Throwable
 			{
 				modifiableModel.commit();
 			}
-		});
+		}.execute();
+
 		indicator.setText(null);
 	}
 
@@ -734,10 +737,10 @@ public abstract class NuGetBasedRepositoryWorker
 			return;
 		}
 
-		invokeWriteAction(new Runnable()
+		new WriteAction<Object>()
 		{
 			@Override
-			public void run()
+			protected void run(Result<Object> result) throws Throwable
 			{
 				VirtualFile packagesDir = LocalFileSystem.getInstance().findFileByPath(getPackagesDirPath());
 				if(packagesDir == null)
@@ -765,20 +768,8 @@ public abstract class NuGetBasedRepositoryWorker
 					}
 				}
 			}
-		});
+		}.execute();
 		indicator.setText(null);
-	}
-
-	public static void invokeWriteAction(final Runnable runnable)
-	{
-		ApplicationManager.getApplication().invokeLater(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				ApplicationManager.getApplication().runWriteAction(runnable);
-			}
-		});
 	}
 
 	public void cancelTasks()
