@@ -27,6 +27,7 @@ import org.mustbe.consulo.nuget.api.NuGetDependencyVersionInfo;
 import org.mustbe.consulo.nuget.api.NuGetDependencyVersionInfoWithBounds;
 import org.mustbe.consulo.nuget.api.NuGetPackageEntry;
 import org.mustbe.consulo.nuget.api.NuGetSimpleDependencyVersionInfo;
+import org.mustbe.consulo.nuget.api.NuGetTargetFrameworkInfo;
 import org.mustbe.consulo.nuget.api.NuGetVersion;
 import org.mustbe.consulo.nuget.util.NuPkgUtil;
 import com.google.gson.Gson;
@@ -623,19 +624,27 @@ public abstract class NuGetBasedRepositoryWorker
 			Library library = moduleLibraryTable.createLibrary(NUGET_LIBRARY_PREFIX + packageInfo.getId() + "." + packageInfo.getVersion());
 			Library.ModifiableModel modifiableModel = library.getModifiableModel();
 
+			// we dont added from root
 			if(!addLibraryFiles(libraryDirectory, modifiableModel))
 			{
-				for(String targetFramework : packageInfo.getTargetFrameworks())
+				VirtualFile[] children = libraryDirectory.getChildren();
+				mainLoop:for(VirtualFile versionFrameworkLib : children)
 				{
-					VirtualFile targetFrameworkLib = libraryDirectory.findFileByRelativePath(targetFramework);
-					if(targetFrameworkLib == null)
+					if(versionFrameworkLib.isDirectory())
 					{
-						continue;
-					}
+						NuGetTargetFrameworkInfo targetFrameworkInfo = NuGetTargetFrameworkInfo.parse(versionFrameworkLib.getName());
 
-					addLibraryFiles(targetFrameworkLib, modifiableModel);
-					break;
+						for(String targetFramework : packageInfo.getTargetFrameworks())
+						{
+							if(targetFrameworkInfo.accept(targetFramework))
+							{
+								addLibraryFiles(versionFrameworkLib, modifiableModel);
+								break mainLoop;
+							}
+						}
+					}
 				}
+
 			}
 
 			modifiableModel.commit();
