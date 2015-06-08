@@ -21,7 +21,7 @@
 	<depends>com.intellij.xml</depends>
 	<depends>org.mustbe.consulo.dotnet.core</depends>
 	<depends config-file="mono-dotnet.xml" optional="true">org.mustbe.consulo.dotnet.mono</depends>
-	<depends config-file="microsoft-dotnet.xml" optional="true">org.mustbe.consulo.microsoft.dotnet</depends>
+	<depends config-file="microsoft-dotnet.xml" optional="true">org.mustbe.consulo.dotnet.microsoft</depends>
 
 	<extensions defaultExtensionNs="com.intellij.xml">
 		<dom.fileDescription implementation="org.mustbe.consulo.nuget.dom.NuGetPackagesDomFileDescription" />
