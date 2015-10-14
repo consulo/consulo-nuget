@@ -22,7 +22,7 @@ import org.consulo.lombok.annotations.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.mustbe.consulo.dotnet.util.ArrayUtil2;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.util.ObjectUtils;
+import com.intellij.util.ObjectUtil;
 
 /**
  * @author VISTALL
@@ -95,7 +95,7 @@ public class NuGetVersion
 				bugfix = Integer.parseInt(bugfixNumber);
 			}
 
-			buildType = ObjectUtils.notNull(buildType, BuildType.___release);
+			buildType = ObjectUtil.notNull(buildType, BuildType.___release);
 			return new NuGetVersion(Integer.parseInt(split.get(0)), Integer.parseInt(split.get(1)), bugfix, buildType, build);
 		}
 		catch(Exception e)
