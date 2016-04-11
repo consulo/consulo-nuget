@@ -18,6 +18,7 @@ package org.mustbe.consulo.nuget.module.extension;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.nuget.dom.NuGetPackage;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Consumer;
@@ -49,6 +50,7 @@ public class NuGetRepositoryWorker extends NuGetBasedRepositoryWorker
 		return moduleDir.getPath() + "/" + PACKAGES_DIR;
 	}
 
+	@RequiredReadAction
 	@Override
 	protected void loadDefinedPackages(@NotNull Consumer<PackageInfo> packageInfoConsumer)
 	{
