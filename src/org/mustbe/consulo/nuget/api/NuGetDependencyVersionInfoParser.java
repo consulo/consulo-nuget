@@ -63,13 +63,21 @@ public class NuGetDependencyVersionInfoParser
 			String max = ArrayUtil2.safeGet(versionList, 1);
 			if(max != null)
 			{
-				max = max.trim();
 				maxCompare = toCompare(max.charAt(max.length() - 1));
 				if(maxCompare != NuGetCompareType.EQ)
 				{
 					max = max.substring(0, max.length() - 1);
 				}
-				maxVersion = NuGetVersion.parseVersion(max);
+
+				boolean undefinedVersion = max.length() == 1 && max.charAt(0) == ' ';
+				if(!undefinedVersion)
+				{
+					maxVersion = NuGetVersion.parseVersion(max);
+				}
+				else
+				{
+					maxVersion = new NuGetVersion(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+				}
 			}
 			else if(indexOfComma == -1)
 			{

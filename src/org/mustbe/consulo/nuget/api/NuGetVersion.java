@@ -100,7 +100,7 @@ public class NuGetVersion
 		}
 		catch(Exception e)
 		{
-			NuGetVersion.LOGGER.error("Problem with parsing version '" + v + "'", e);
+			LOGGER.error("Problem with parsing version '" + v + "'", e);
 			return new NuGetVersion(0, 0, 0);
 		}
 	}

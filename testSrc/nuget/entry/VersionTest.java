@@ -70,5 +70,6 @@ public class VersionTest extends Assert
 	public void testDependencyVersion()
 	{
 		NuGetDependencyVersionInfoParser.parse("[1.0.0]");
+		NuGetDependencyVersionInfoParser.parse("[1.0.0, )");
 	}
 }
