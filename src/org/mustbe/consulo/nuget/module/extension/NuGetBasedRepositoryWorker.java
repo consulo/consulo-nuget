@@ -1,15 +1,13 @@
 package org.mustbe.consulo.nuget.module.extension;
 
-import gnu.trove.THashMap;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.consulo.lombok.annotations.Logger;
@@ -56,7 +54,6 @@ import com.intellij.util.ArrayUtil;
 import com.intellij.util.Consumer;
 import com.intellij.util.io.DownloadUtil;
 import com.intellij.util.io.HttpRequests;
-import lombok.val;
 
 /**
  * @author VISTALL
@@ -197,8 +194,8 @@ public abstract class NuGetBasedRepositoryWorker
 			{
 				try
 				{
-					val packageMap = new TreeMap<String, PackageInfo>();
-					val packageInfoConsumer = new Consumer<PackageInfo>()
+					final Map<String, PackageInfo> packageMap = new LinkedHashMap<String, PackageInfo>();
+					final Consumer<PackageInfo> packageInfoConsumer = new Consumer<PackageInfo>()
 					{
 						@Override
 						public void consume(PackageInfo packageInfo)
@@ -226,8 +223,7 @@ public abstract class NuGetBasedRepositoryWorker
 
 					for(PackageInfo packageInfo : packageMap.values())
 					{
-						packageInfo.setPackageEntry(resolvePackageEntry(repositoryManager, indicator, requestQueue, packageInfo.myId,
-								packageInfo.myVersion));
+						packageInfo.setPackageEntry(resolvePackageEntry(repositoryManager, indicator, requestQueue, packageInfo.myId, packageInfo.myVersion));
 					}
 
 					resolveDependencies(indicator, requestQueue, repositoryManager, packageInfoConsumer, packageMap);
@@ -245,7 +241,7 @@ public abstract class NuGetBasedRepositoryWorker
 					{
 						return;
 					}
-					Map<PackageInfo, VirtualFile> refreshQueue = new THashMap<PackageInfo, VirtualFile>();
+					Map<PackageInfo, VirtualFile> refreshQueue = new LinkedHashMap<PackageInfo, VirtualFile>();
 
 					indicator.setText("NuGet: Downloading dependencies...");
 					File packageDir = new File(packagesDir);
@@ -263,10 +259,10 @@ public abstract class NuGetBasedRepositoryWorker
 							continue;
 						}
 
-						val extractDir = new File(packageDir, key);
+						final File extractDir = new File(packageDir, key);
 						if(!extractDir.exists())
 						{
-							val downloadTarget = new File(extractDir, value.getId() + "." + value.getVersion() + ".nupkg");
+							File downloadTarget = new File(extractDir, value.getId() + "." + value.getVersion() + ".nupkg");
 
 							FileUtil.createParentDirs(downloadTarget);
 
@@ -281,9 +277,7 @@ public abstract class NuGetBasedRepositoryWorker
 									public boolean accept(File dir, String name)
 									{
 										File parentFile = dir.getParentFile();
-										return parentFile != null && parentFile.getName().equals("lib") && FileUtil.filesEqual(extractDir,
-												parentFile.getParentFile());
-
+										return parentFile != null && parentFile.getName().equals("lib") && FileUtil.filesEqual(extractDir, parentFile.getParentFile());
 									}
 								}, true);
 							}
@@ -291,8 +285,7 @@ public abstract class NuGetBasedRepositoryWorker
 							{
 								FileUtil.delete(downloadTarget);
 
-								Notifications.Bus.notify(new Notification("NuGet", "Warning", "Fail to download dependency with id: " + value.getId
-										() +
+								Notifications.Bus.notify(new Notification("NuGet", "Warning", "Fail to download dependency with id: " + value.getId() +
 										" " +
 										"and version: " + value.getVersion(), NotificationType.WARNING));
 							}
@@ -446,8 +439,7 @@ public abstract class NuGetBasedRepositoryWorker
 			{
 				indicator.setText("NuGet: Getting info about " + id + " package from " + url);
 
-				Map<String, NuGetPackageEntry> map = requestQueue.request(BundleBase.format(ourPackagesFilterPattern, url, id),
-						new HttpRequests.RequestProcessor<Map<String, NuGetPackageEntry>>()
+				Map<String, NuGetPackageEntry> map = requestQueue.request(BundleBase.format(ourPackagesFilterPattern, url, id), new HttpRequests.RequestProcessor<Map<String, NuGetPackageEntry>>()
 
 				{
 					@Override
@@ -629,7 +621,7 @@ public abstract class NuGetBasedRepositoryWorker
 	{
 		indicator.setText("NuGet: removing old dependencies from file system");
 
-		val dir = getPackagesDirPath();
+		final String dir = getPackagesDirPath();
 		if(dir == null)
 		{
 			return;
