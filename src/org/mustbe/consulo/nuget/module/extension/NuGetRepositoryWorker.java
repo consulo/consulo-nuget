@@ -20,9 +20,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.nuget.dom.NuGetPackage;
+import org.mustbe.consulo.nuget.dom.NuGetPackagesFile;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Consumer;
-import lombok.val;
 
 /**
  * @author VISTALL
@@ -54,7 +54,7 @@ public class NuGetRepositoryWorker extends NuGetBasedRepositoryWorker
 	@Override
 	protected void loadDefinedPackages(@NotNull Consumer<PackageInfo> packageInfoConsumer)
 	{
-		val packagesFile = myExtension.getPackagesFile();
+		NuGetPackagesFile packagesFile = myExtension.getPackagesFile();
 		if(packagesFile == null)
 		{
 			return;

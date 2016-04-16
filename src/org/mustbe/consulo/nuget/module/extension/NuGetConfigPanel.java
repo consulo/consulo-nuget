@@ -31,7 +31,6 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBTextField;
-import lombok.val;
 
 /**
  * @author VISTALL
@@ -43,10 +42,9 @@ public class NuGetConfigPanel extends JPanel
 	{
 		super(new VerticalFlowLayout(VerticalFlowLayout.TOP));
 
-		val textField = new JBTextField();
+		final JBTextField textField = new JBTextField();
 
-		textField.getEmptyText().setText(VfsUtil.urlToPath(moduleExtension.getModule().getModuleDirUrl() + "/" + NuGetModuleExtension
-				.PACKAGES_CONFIG));
+		textField.getEmptyText().setText(VfsUtil.urlToPath(moduleExtension.getModule().getModuleDirUrl() + "/" + NuGetModuleExtension.PACKAGES_CONFIG));
 
 		String configFileUrl = moduleExtension.getConfigFileUrl();
 		if(!StringUtil.isEmpty(configFileUrl))
@@ -54,7 +52,7 @@ public class NuGetConfigPanel extends JPanel
 			textField.setText(FileUtil.toSystemDependentName(VfsUtil.urlToPath(configFileUrl)));
 		}
 
-		val browseButton = new TextFieldWithBrowseButton(textField);
+		TextFieldWithBrowseButton browseButton = new TextFieldWithBrowseButton(textField);
 		browseButton.addBrowseFolderListener("Select File", "Select NuGet package config file", moduleExtension.getProject(),
 				FileChooserDescriptorFactory.createSingleFileDescriptor(XmlFileType.INSTANCE), new TextComponentAccessor<JTextField>()
 		{
