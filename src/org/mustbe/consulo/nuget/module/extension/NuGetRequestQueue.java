@@ -21,7 +21,7 @@ import gnu.trove.THashMap;
 import java.io.IOException;
 import java.util.Map;
 
-import org.consulo.lombok.annotations.Logger;
+import consulo.lombok.annotations.Logger;
 import com.intellij.util.io.HttpRequests;
 
 /**

@@ -16,7 +16,6 @@
 
 package org.mustbe.consulo.nuget.module.extension;
 
-import org.consulo.lombok.annotations.LazyInstance;
 import org.consulo.module.extension.impl.ModuleExtensionImpl;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +30,7 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.xml.DomFileElement;
 import com.intellij.util.xml.DomManager;
+import consulo.lombok.annotations.Lazy;
 
 /**
  * @author VISTALL
@@ -70,7 +70,7 @@ public class NuGetModuleExtension extends ModuleExtensionImpl<NuGetModuleExtensi
 	}
 
 	@NotNull
-	@LazyInstance
+	@Lazy
 	public NuGetRepositoryWorker getWorker()
 	{
 		return new NuGetRepositoryWorker(NuGetModuleExtension.this);
