@@ -28,9 +28,6 @@ import com.intellij.openapi.fileTypes.FileTypeFactory;
  */
 public class NuGetFileTypeFactory extends FileTypeFactory
 {
-	@Deprecated
-	public static final String PACKAGES_CONFIG = "packages.config";
-
 	@Override
 	public void createFileTypes(@NotNull FileTypeConsumer consumer)
 	{
