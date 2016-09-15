@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.nuget.module.extension;
+package consulo.nuget.module.extension;
 
 import javax.swing.JComponent;
 

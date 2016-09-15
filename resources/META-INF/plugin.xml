@@ -15,7 +15,7 @@
   -->
 
 <idea-plugin>
-	<id>org.mustbe.consulo.nuget</id>
+	<id>consulo.nuget</id>
 	<name>NuGet</name>
 	<version>SNAPSHOT</version>
 	<depends>com.intellij.xml</depends>
@@ -24,12 +24,12 @@
 	<depends config-file="consulo.dotnet.microsoft.xml" optional="true">consulo.dotnet.microsoft</depends>
 
 	<extensions defaultExtensionNs="com.intellij.xml">
-		<dom.fileDescription implementation="org.mustbe.consulo.nuget.dom.NuGetPackagesDomFileDescription" />
+		<dom.fileDescription implementation="consulo.nuget.dom.NuGetPackagesDomFileDescription" />
 	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij">
-		<fileTypeFactory implementation="org.mustbe.consulo.nuget.NuGetFileTypeFactory" />
+		<fileTypeFactory implementation="consulo.nuget.NuGetFileTypeFactory" />
 
-		<editorNotificationProvider implementation="org.mustbe.consulo.nuget.NuGetFileHeader" />
+		<editorNotificationProvider implementation="consulo.nuget.NuGetFileHeader" />
 	</extensions>
 </idea-plugin>

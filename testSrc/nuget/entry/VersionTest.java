@@ -18,10 +18,10 @@ package nuget.entry;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mustbe.consulo.nuget.api.NuGetCompareType;
-import org.mustbe.consulo.nuget.api.NuGetDependencyVersionInfoParser;
-import org.mustbe.consulo.nuget.api.NuGetDependencyVersionInfoWithBounds;
-import org.mustbe.consulo.nuget.api.NuGetVersion;
+import consulo.nuget.api.NuGetCompareType;
+import consulo.nuget.api.NuGetDependencyVersionInfoParser;
+import consulo.nuget.api.NuGetDependencyVersionInfoWithBounds;
+import consulo.nuget.api.NuGetVersion;
 
 /**
  * @author VISTALL

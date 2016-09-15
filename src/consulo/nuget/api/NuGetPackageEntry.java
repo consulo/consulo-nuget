@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.nuget.api;
+package consulo.nuget.api;
 
 import java.util.List;
 

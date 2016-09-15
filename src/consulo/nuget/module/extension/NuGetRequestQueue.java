@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.nuget.module.extension;
+package consulo.nuget.module.extension;
 
 import gnu.trove.THashMap;
 
@@ -49,7 +49,7 @@ public class NuGetRequestQueue
 		}
 		catch(IOException e)
 		{
-			LOGGER.warn("Failed to execute url: " + url, e);
+			NuGetRequestQueue.LOGGER.warn("Failed to execute url: " + url, e);
 		}
 
 		myCache.put(url, value);

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.nuget.dom;
+package consulo.nuget.dom;
 
 import javax.swing.Icon;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.nuget.module.extension.NuGetModuleExtension;
+import consulo.nuget.module.extension.NuGetModuleExtension;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.module.ModuleUtilCore;

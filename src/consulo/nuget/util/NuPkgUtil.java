@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.nuget.util;
+package consulo.nuget.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

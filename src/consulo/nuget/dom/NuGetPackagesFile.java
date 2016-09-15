@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 must-be.org
+ * Copyright 2013-2014 must-be.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,21 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.nuget.api;
+package consulo.nuget.dom;
 
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.util.xml.DefinesXml;
+import com.intellij.util.xml.DomElement;
 
 /**
  * @author VISTALL
- * @since 16.03.2015
+ * @since 24.11.14
  */
-public class NuGetTargetFrameworkInfo
+@DefinesXml
+public interface NuGetPackagesFile extends DomElement
 {
-	public static NuGetTargetFrameworkInfo parse(@NotNull String targetFramework)
-	{
-		return new NuGetTargetFrameworkInfo(StringUtil.split(targetFramework, "+"));
-	}
-
-	private List<String> myTargetFrameworks;
-
-	public NuGetTargetFrameworkInfo(List<String> targetFrameworks)
-	{
-		myTargetFrameworks = targetFrameworks;
-	}
-
-	public boolean accept(@NotNull String framework)
-	{
-		return myTargetFrameworks.contains(framework);
-	}
+	@NotNull
+	List<NuGetPackage> getPackages();
 }

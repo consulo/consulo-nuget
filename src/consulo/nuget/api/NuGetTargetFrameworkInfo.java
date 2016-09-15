@@ -14,17 +14,33 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.nuget.api;
+package consulo.nuget.api;
+
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.util.text.StringUtil;
 
 /**
  * @author VISTALL
- * @since 23.02.2015
+ * @since 16.03.2015
  */
-public enum NuGetCompareType
+public class NuGetTargetFrameworkInfo
 {
-	GT,
-	GTEQ,
-	EQ,
-	LTEQ,
-	LT
+	public static NuGetTargetFrameworkInfo parse(@NotNull String targetFramework)
+	{
+		return new NuGetTargetFrameworkInfo(StringUtil.split(targetFramework, "+"));
+	}
+
+	private List<String> myTargetFrameworks;
+
+	public NuGetTargetFrameworkInfo(List<String> targetFrameworks)
+	{
+		myTargetFrameworks = targetFrameworks;
+	}
+
+	public boolean accept(@NotNull String framework)
+	{
+		return myTargetFrameworks.contains(framework);
+	}
 }

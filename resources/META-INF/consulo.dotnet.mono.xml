@@ -20,7 +20,7 @@
 								 parentKey="mono-dotnet"
 								 icon="/icons/nuget.png"
 								 name="NuGet"
-								 immutableClass="org.mustbe.consulo.nuget.module.extension.NuGetModuleExtension"
-								 mutableClass="org.mustbe.consulo.nuget.module.extension.NuGetMutableModuleExtension" />
+								 immutableClass="consulo.nuget.module.extension.NuGetModuleExtension"
+								 mutableClass="consulo.nuget.module.extension.NuGetMutableModuleExtension" />
 	</extensions>
 </idea-plugin>

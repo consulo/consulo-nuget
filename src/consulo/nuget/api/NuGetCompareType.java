@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.nuget.module.extension;
-
-import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
+package consulo.nuget.api;
 
 /**
  * @author VISTALL
  * @since 23.02.2015
  */
-public interface NuGetRepositoryManager
+public enum NuGetCompareType
 {
-	@NotNull
-	List<String> getRepositories();
+	GT,
+	GTEQ,
+	EQ,
+	LTEQ,
+	LT
 }

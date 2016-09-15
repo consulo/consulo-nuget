@@ -14,21 +14,28 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.nuget.dom;
-
-import java.util.List;
+package consulo.nuget;
 
 import org.jetbrains.annotations.NotNull;
-import com.intellij.util.xml.DefinesXml;
-import com.intellij.util.xml.DomElement;
+import com.intellij.ide.highlighter.XmlFileType;
+import com.intellij.openapi.fileTypes.ExtensionFileNameMatcher;
+import com.intellij.openapi.fileTypes.FileTypeConsumer;
+import com.intellij.openapi.fileTypes.FileTypeFactory;
 
 /**
  * @author VISTALL
  * @since 24.11.14
  */
-@DefinesXml
-public interface NuGetPackagesFile extends DomElement
+public class NuGetFileTypeFactory extends FileTypeFactory
 {
-	@NotNull
-	List<NuGetPackage> getPackages();
+	@Deprecated
+	public static final String PACKAGES_CONFIG = "packages.config";
+
+	@Override
+	public void createFileTypes(@NotNull FileTypeConsumer consumer)
+	{
+		//FIXME [VISTALL] currenly its a problem - due we need always mark *.config files as XML
+		consumer.consume(XmlFileType.INSTANCE, new ExtensionFileNameMatcher("config"));
+	}
 }
+

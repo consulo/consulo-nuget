@@ -1,4 +1,4 @@
-package org.mustbe.consulo.nuget.module.extension;
+package consulo.nuget.module.extension;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -14,12 +14,12 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.nuget.api.NuGetDependency;
-import org.mustbe.consulo.nuget.api.NuGetPackageEntry;
-import org.mustbe.consulo.nuget.api.NuGetPackageEntryParser;
-import org.mustbe.consulo.nuget.api.NuGetTargetFrameworkInfo;
-import org.mustbe.consulo.nuget.api.NuGetVersion;
-import org.mustbe.consulo.nuget.util.NuPkgUtil;
+import consulo.nuget.api.NuGetDependency;
+import consulo.nuget.api.NuGetPackageEntry;
+import consulo.nuget.api.NuGetPackageEntryParser;
+import consulo.nuget.api.NuGetTargetFrameworkInfo;
+import consulo.nuget.api.NuGetVersion;
+import consulo.nuget.util.NuPkgUtil;
 import com.intellij.BundleBase;
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.notification.Notification;
@@ -306,7 +306,7 @@ public abstract class NuGetBasedRepositoryWorker
 				}
 				catch(Exception e)
 				{
-					LOGGER.error(e);
+					NuGetBasedRepositoryWorker.LOGGER.error(e);
 				}
 			}
 

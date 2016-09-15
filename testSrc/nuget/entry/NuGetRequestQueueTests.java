@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.mustbe.consulo.nuget.module.extension.NuGetRequestQueue;
+import consulo.nuget.module.extension.NuGetRequestQueue;
 import com.intellij.util.io.HttpRequests;
 import junit.framework.Assert;
 

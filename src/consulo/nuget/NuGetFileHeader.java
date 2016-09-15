@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.nuget;
+package consulo.nuget;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.nuget.dom.NuGetPackagesFile;
-import org.mustbe.consulo.nuget.module.extension.NuGetModuleExtension;
-import org.mustbe.consulo.nuget.module.extension.NuGetMutableModuleExtension;
-import org.mustbe.consulo.nuget.module.extension.NuGetRepositoryWorker;
+import consulo.nuget.dom.NuGetPackagesFile;
+import consulo.nuget.module.extension.NuGetModuleExtension;
+import consulo.nuget.module.extension.NuGetMutableModuleExtension;
+import consulo.nuget.module.extension.NuGetRepositoryWorker;
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.FileEditor;

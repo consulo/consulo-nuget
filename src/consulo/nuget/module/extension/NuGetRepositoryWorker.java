@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.nuget.module.extension;
+package consulo.nuget.module.extension;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.nuget.dom.NuGetPackage;
-import org.mustbe.consulo.nuget.dom.NuGetPackagesFile;
+import consulo.nuget.dom.NuGetPackage;
+import consulo.nuget.dom.NuGetPackagesFile;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Consumer;
 import consulo.annotations.RequiredReadAction;

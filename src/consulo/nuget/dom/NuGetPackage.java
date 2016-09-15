@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 must-be.org
+ * Copyright 2013-2014 must-be.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,32 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.nuget.api;
+package consulo.nuget.dom;
 
 import org.jetbrains.annotations.NotNull;
+import com.intellij.util.xml.Attribute;
+import com.intellij.util.xml.DomElement;
+import com.intellij.util.xml.GenericAttributeValue;
+import com.intellij.util.xml.Required;
 
 /**
  * @author VISTALL
- * @since 23.02.2015
+ * @since 24.11.14
  */
-public class NuGetSimpleDependencyVersionInfo implements NuGetDependencyVersionInfo
+public interface NuGetPackage extends DomElement
 {
-	private NuGetVersion myVersion;
+	@NotNull
+	@Attribute
+	@Required
+	GenericAttributeValue<String> getId();
 
-	public NuGetSimpleDependencyVersionInfo(NuGetVersion version)
-	{
-		myVersion = version;
-	}
+	@NotNull
+	@Attribute
+	@Required
+	GenericAttributeValue<String> getVersion();
 
-	@Override
-	public boolean is(@NotNull NuGetVersion version)
-	{
-		return myVersion.compareTo(version) == 0;
-	}
-
-	@Override
-	public String toString()
-	{
-		return "NuGetSimpleDependencyVersionInfo{" +
-				"myVersion=" + myVersion +
-				'}';
-	}
+	@NotNull
+	@Attribute("targetFramework")
+	@Required
+	GenericAttributeValue<String> getTargetFramework();
 }
