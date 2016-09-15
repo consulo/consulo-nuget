@@ -19,9 +19,9 @@ package org.mustbe.consulo.nuget.api;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.dotnet.util.ArrayUtil2;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.ObjectUtil;
+import consulo.dotnet.util.ArrayUtil2;
 import consulo.lombok.annotations.Logger;
 
 /**

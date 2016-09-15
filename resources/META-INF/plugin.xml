@@ -19,9 +19,9 @@
 	<name>NuGet</name>
 	<version>SNAPSHOT</version>
 	<depends>com.intellij.xml</depends>
-	<depends>org.mustbe.consulo.dotnet.core</depends>
-	<depends config-file="mono-dotnet.xml" optional="true">org.mustbe.consulo.dotnet.mono</depends>
-	<depends config-file="microsoft-dotnet.xml" optional="true">org.mustbe.consulo.dotnet.microsoft</depends>
+	<depends>consulo.dotnet</depends>
+	<depends config-file="consulo.dotnet.mono.xml" optional="true">consulo.dotnet.mono</depends>
+	<depends config-file="consulo.dotnet.microsoft.xml" optional="true">consulo.dotnet.microsoft</depends>
 
 	<extensions defaultExtensionNs="com.intellij.xml">
 		<dom.fileDescription implementation="org.mustbe.consulo.nuget.dom.NuGetPackagesDomFileDescription" />
@@ -29,8 +29,6 @@
 
 	<extensions defaultExtensionNs="com.intellij">
 		<fileTypeFactory implementation="org.mustbe.consulo.nuget.NuGetFileTypeFactory" />
-
-		<errorHandler implementation="com.intellij.diagnostic.ITNReporter" />
 
 		<editorNotificationProvider implementation="org.mustbe.consulo.nuget.NuGetFileHeader" />
 	</extensions>

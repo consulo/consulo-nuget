@@ -16,12 +16,10 @@
 
 package org.mustbe.consulo.nuget.module.extension;
 
-import org.consulo.module.extension.impl.ModuleExtensionImpl;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.nuget.dom.NuGetPackagesFile;
-import com.intellij.openapi.roots.ModuleRootLayer;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -30,7 +28,9 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.xml.DomFileElement;
 import com.intellij.util.xml.DomManager;
+import consulo.extension.impl.ModuleExtensionImpl;
 import consulo.lombok.annotations.Lazy;
+import consulo.roots.ModuleRootLayer;
 
 /**
  * @author VISTALL

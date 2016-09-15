@@ -19,8 +19,8 @@ package org.mustbe.consulo.nuget.api;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.dotnet.util.ArrayUtil2;
 import com.intellij.openapi.util.text.StringUtil;
+import consulo.dotnet.util.ArrayUtil2;
 
 /**
  * @author VISTALL

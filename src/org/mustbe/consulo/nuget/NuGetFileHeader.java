@@ -18,9 +18,6 @@ package org.mustbe.consulo.nuget;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.RequiredDispatchThread;
-import org.mustbe.consulo.RequiredReadAction;
-import org.mustbe.consulo.editor.notifications.EditorNotificationProvider;
 import org.mustbe.consulo.nuget.dom.NuGetPackagesFile;
 import org.mustbe.consulo.nuget.module.extension.NuGetModuleExtension;
 import org.mustbe.consulo.nuget.module.extension.NuGetMutableModuleExtension;
@@ -39,6 +36,9 @@ import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.EditorNotificationPanel;
 import com.intellij.ui.EditorNotifications;
+import consulo.annotations.RequiredDispatchThread;
+import consulo.annotations.RequiredReadAction;
+import consulo.editor.notifications.EditorNotificationProvider;
 
 /**
  * @author VISTALL
