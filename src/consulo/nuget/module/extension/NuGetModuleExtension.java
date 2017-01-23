@@ -19,7 +19,7 @@ package consulo.nuget.module.extension;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import consulo.nuget.dom.NuGetPackagesFile;
+import com.intellij.openapi.util.NotNullLazyValue;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -28,8 +28,9 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.xml.DomFileElement;
 import com.intellij.util.xml.DomManager;
-import consulo.extension.impl.ModuleExtensionImpl;
-import consulo.lombok.annotations.Lazy;
+import consulo.annotations.RequiredReadAction;
+import consulo.module.extension.impl.ModuleExtensionImpl;
+import consulo.nuget.dom.NuGetPackagesFile;
 import consulo.roots.ModuleRootLayer;
 
 /**
@@ -40,6 +41,7 @@ public class NuGetModuleExtension extends ModuleExtensionImpl<NuGetModuleExtensi
 {
 	public static final String PACKAGES_CONFIG = "packages.config";
 
+	private final NotNullLazyValue<NuGetRepositoryWorker> myWorkerValue = NotNullLazyValue.createValue(() -> new NuGetRepositoryWorker(this));
 	protected String myConfigFileUrl;
 
 	public NuGetModuleExtension(@NotNull String id, @NotNull ModuleRootLayer moduleRootLayer)
@@ -47,6 +49,7 @@ public class NuGetModuleExtension extends ModuleExtensionImpl<NuGetModuleExtensi
 		super(id, moduleRootLayer);
 	}
 
+	@RequiredReadAction
 	@Override
 	public void commit(@NotNull NuGetModuleExtension mutableModuleExtension)
 	{
@@ -63,6 +66,7 @@ public class NuGetModuleExtension extends ModuleExtensionImpl<NuGetModuleExtensi
 		}
 	}
 
+	@RequiredReadAction
 	@Override
 	protected void loadStateImpl(@NotNull Element element)
 	{
@@ -70,10 +74,9 @@ public class NuGetModuleExtension extends ModuleExtensionImpl<NuGetModuleExtensi
 	}
 
 	@NotNull
-	@Lazy
 	public NuGetRepositoryWorker getWorker()
 	{
-		return new NuGetRepositoryWorker(NuGetModuleExtension.this);
+		return myWorkerValue.getValue();
 	}
 
 	public String getConfigFileUrl()
@@ -109,8 +112,7 @@ public class NuGetModuleExtension extends ModuleExtensionImpl<NuGetModuleExtensi
 		{
 			return null;
 		}
-		DomFileElement<NuGetPackagesFile> fileElement = DomManager.getDomManager(getProject()).getFileElement((XmlFile) maybeXmlFile,
-				NuGetPackagesFile.class);
+		DomFileElement<NuGetPackagesFile> fileElement = DomManager.getDomManager(getProject()).getFileElement((XmlFile) maybeXmlFile, NuGetPackagesFile.class);
 		return fileElement == null ? null : fileElement.getRootElement();
 	}
 }

@@ -21,16 +21,17 @@ import gnu.trove.THashMap;
 import java.io.IOException;
 import java.util.Map;
 
-import consulo.lombok.annotations.Logger;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.io.HttpRequests;
 
 /**
  * @author VISTALL
  * @since 16.03.2015
  */
-@Logger
 public class NuGetRequestQueue
 {
+	private static final Logger LOGGER = Logger.getInstance(NuGetRequestQueue.class);
+
 	private Map<String, Object> myCache = new THashMap<String, Object>();
 
 	@SuppressWarnings("unchecked")
@@ -49,7 +50,7 @@ public class NuGetRequestQueue
 		}
 		catch(IOException e)
 		{
-			NuGetRequestQueue.LOGGER.warn("Failed to execute url: " + url, e);
+			LOGGER.warn("Failed to execute url: " + url, e);
 		}
 
 		myCache.put(url, value);

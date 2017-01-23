@@ -19,18 +19,18 @@ package consulo.nuget.api;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.ObjectUtil;
 import consulo.dotnet.util.ArrayUtil2;
-import consulo.lombok.annotations.Logger;
 
 /**
  * @author VISTALL
  * @since 23.02.2015
  */
-@Logger
 public class NuGetVersion
 {
+	private static final Logger LOGGER = Logger.getInstance(NuGetVersion.class);
 
 	public static NuGetVersion parseVersion(String v)
 	{

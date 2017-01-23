@@ -14,12 +14,6 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import consulo.nuget.api.NuGetDependency;
-import consulo.nuget.api.NuGetPackageEntry;
-import consulo.nuget.api.NuGetPackageEntryParser;
-import consulo.nuget.api.NuGetTargetFrameworkInfo;
-import consulo.nuget.api.NuGetVersion;
-import consulo.nuget.util.NuPkgUtil;
 import com.intellij.BundleBase;
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.notification.Notification;
@@ -28,6 +22,7 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.Result;
 import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
@@ -50,7 +45,12 @@ import com.intellij.util.io.DownloadUtil;
 import com.intellij.util.io.HttpRequests;
 import consulo.annotations.RequiredReadAction;
 import consulo.dotnet.dll.DotNetModuleFileType;
-import consulo.lombok.annotations.Logger;
+import consulo.nuget.api.NuGetDependency;
+import consulo.nuget.api.NuGetPackageEntry;
+import consulo.nuget.api.NuGetPackageEntryParser;
+import consulo.nuget.api.NuGetTargetFrameworkInfo;
+import consulo.nuget.api.NuGetVersion;
+import consulo.nuget.util.NuPkgUtil;
 import consulo.roots.types.BinariesOrderRootType;
 import consulo.roots.types.DocumentationOrderRootType;
 import consulo.vfs.util.ArchiveVfsUtil;
@@ -59,9 +59,10 @@ import consulo.vfs.util.ArchiveVfsUtil;
  * @author VISTALL
  * @since 22.02.2015
  */
-@Logger
 public abstract class NuGetBasedRepositoryWorker
 {
+	private static final Logger LOGGER = Logger.getInstance(NuGetBasedRepositoryWorker.class);
+
 	public static class PackageInfo
 	{
 		private String myId;
