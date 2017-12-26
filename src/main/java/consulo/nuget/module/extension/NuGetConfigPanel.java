@@ -76,6 +76,6 @@ public class NuGetConfigPanel extends JPanel
 				moduleExtension.setConfigFilePath(FileUtil.toSystemIndependentName(textField.getText()));
 			}
 		});
-		add(LabeledComponent.left(browseButton, "Config file:"));
+		add(LabeledComponent.create(browseButton, "Config file:"));
 	}
 }

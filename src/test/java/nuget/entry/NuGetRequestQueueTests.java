@@ -19,10 +19,10 @@ package nuget.entry;
 import java.io.IOException;
 
 import org.jetbrains.annotations.NotNull;
+import org.junit.Assert;
 import org.junit.Test;
-import consulo.nuget.module.extension.NuGetRequestQueue;
 import com.intellij.util.io.HttpRequests;
-import junit.framework.Assert;
+import consulo.nuget.module.extension.NuGetRequestQueue;
 
 /**
  * @author VISTALL

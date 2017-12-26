@@ -1,1 +1,1 @@
-![Build Status](http://must-be.org/vulcan/statusImage?name=consulo-nuget)
+[![Build Status](https://ci.consulo.io/job/consulo-nuget/badge/icon)](https://ci.consulo.io/job/consulo-nuget/)
