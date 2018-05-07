@@ -16,9 +16,8 @@
 
 package icons;
 
-import javax.swing.Icon;
-
 import com.intellij.openapi.util.IconLoader;
+import consulo.ui.image.Image;
 
 /**
  * @author VISTALL
@@ -26,5 +25,5 @@ import com.intellij.openapi.util.IconLoader;
  */
 public interface NuGetIcons
 {
-	Icon NuGet = IconLoader.findIcon("/icons/nuget.png");
+	Image NuGet = IconLoader.findIcon("/icons/nuget.png");
 }

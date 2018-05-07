@@ -18,9 +18,7 @@ package consulo.nuget.dom;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.Icon;
 
-import consulo.nuget.module.extension.NuGetModuleExtension;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.module.ModuleUtilCore;
@@ -29,6 +27,8 @@ import com.intellij.openapi.util.Iconable;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.xml.DomFileDescription;
+import consulo.nuget.module.extension.NuGetModuleExtension;
+import consulo.ui.image.Image;
 import icons.NuGetIcons;
 
 /**
@@ -62,7 +62,7 @@ public class NuGetPackagesDomFileDescription extends DomFileDescription<NuGetPac
 
 	@Nullable
 	@Override
-	public Icon getFileIcon(@Iconable.IconFlags int flags)
+	public Image getFileIcon(@Iconable.IconFlags int flags)
 	{
 		return NuGetIcons.NuGet;
 	}
