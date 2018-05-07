@@ -18,7 +18,7 @@ package consulo.nuget.api;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.openapi.util.text.StringUtil;
 import consulo.dotnet.util.ArrayUtil2;
 
@@ -28,7 +28,7 @@ import consulo.dotnet.util.ArrayUtil2;
  */
 public class NuGetDependencyVersionInfoParser
 {
-	@NotNull
+	@Nonnull
 	public static NuGetDependencyVersionInfo parse(String versionInfo)
 	{
 		NuGetDependencyVersionInfo dependencyVersionInfo = null;

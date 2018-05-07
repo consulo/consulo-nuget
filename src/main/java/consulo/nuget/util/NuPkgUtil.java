@@ -27,8 +27,8 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.util.io.URLUtil;
 import com.intellij.util.io.ZipUtil;
@@ -42,13 +42,13 @@ import com.intellij.util.io.ZipUtil;
  */
 public class NuPkgUtil
 {
-	public static void extract(@NotNull File file, @NotNull File outputDir, @Nullable FilenameFilter filenameFilter) throws IOException
+	public static void extract(@Nonnull File file, @Nonnull File outputDir, @Nullable FilenameFilter filenameFilter) throws IOException
 	{
 		extract(file, outputDir, filenameFilter, true);
 	}
 
-	public static void extract(@NotNull File file,
-			@NotNull File outputDir,
+	public static void extract(@Nonnull File file,
+			@Nonnull File outputDir,
 			@Nullable FilenameFilter filenameFilter,
 			boolean overwrite) throws IOException
 	{
@@ -63,13 +63,13 @@ public class NuPkgUtil
 		}
 	}
 
-	public static void extract(final @NotNull ZipFile zipFile, @NotNull File outputDir, @Nullable FilenameFilter filenameFilter) throws IOException
+	public static void extract(final @Nonnull ZipFile zipFile, @Nonnull File outputDir, @Nullable FilenameFilter filenameFilter) throws IOException
 	{
 		extract(zipFile, outputDir, filenameFilter, true);
 	}
 
-	public static void extract(final @NotNull ZipFile zipFile,
-			@NotNull File outputDir,
+	public static void extract(final @Nonnull ZipFile zipFile,
+			@Nonnull File outputDir,
 			@Nullable FilenameFilter filenameFilter,
 			boolean overwrite) throws IOException
 	{

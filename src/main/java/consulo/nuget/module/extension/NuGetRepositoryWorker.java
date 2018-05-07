@@ -16,8 +16,8 @@
 
 package consulo.nuget.module.extension;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import consulo.nuget.dom.NuGetPackage;
 import consulo.nuget.dom.NuGetPackagesFile;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -52,7 +52,7 @@ public class NuGetRepositoryWorker extends NuGetBasedRepositoryWorker
 
 	@RequiredReadAction
 	@Override
-	protected void loadDefinedPackages(@NotNull Consumer<PackageInfo> packageInfoConsumer)
+	protected void loadDefinedPackages(@Nonnull Consumer<PackageInfo> packageInfoConsumer)
 	{
 		NuGetPackagesFile packagesFile = myExtension.getPackagesFile();
 		if(packagesFile == null)

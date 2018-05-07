@@ -18,7 +18,7 @@ package consulo.nuget.module.extension;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL
@@ -26,6 +26,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface NuGetRepositoryManager
 {
-	@NotNull
+	@Nonnull
 	List<String> getRepositories();
 }

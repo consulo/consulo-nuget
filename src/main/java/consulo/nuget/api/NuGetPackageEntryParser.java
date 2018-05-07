@@ -21,9 +21,10 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
+import javax.annotation.Nonnull;
+
 import org.jdom.Element;
 import org.jdom.Namespace;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.SmartList;
 
@@ -38,8 +39,8 @@ public class NuGetPackageEntryParser
 			"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata");
 	private static final Namespace ourDataServicesNamespace = Namespace.getNamespace("d", "http://schemas.microsoft.com/ado/2007/08/dataservices");
 
-	@NotNull
-	public static Map<String, NuGetPackageEntry> parse(@NotNull Element rootElement, @NotNull String id, @NotNull String repoUrl)
+	@Nonnull
+	public static Map<String, NuGetPackageEntry> parse(@Nonnull Element rootElement, @Nonnull String id, @Nonnull String repoUrl)
 	{
 		Map<String, NuGetPackageEntry> map = new TreeMap<String, NuGetPackageEntry>();
 

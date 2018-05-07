@@ -18,7 +18,7 @@ package consulo.nuget.api;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.ObjectUtil;
@@ -126,7 +126,7 @@ public class NuGetVersion
 		this(major, minor, bugfix, BuildType.___release, 0);
 	}
 
-	public NuGetVersion(int major, int minor, int bugfix, @NotNull BuildType buildType, int build)
+	public NuGetVersion(int major, int minor, int bugfix, @Nonnull BuildType buildType, int build)
 	{
 		this.bugfix = bugfix;
 		this.minor = minor;

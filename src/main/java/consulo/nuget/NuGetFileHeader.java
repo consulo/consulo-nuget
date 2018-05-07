@@ -16,8 +16,9 @@
 
 package consulo.nuget;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import consulo.nuget.dom.NuGetPackagesFile;
 import consulo.nuget.module.extension.NuGetModuleExtension;
 import consulo.nuget.module.extension.NuGetMutableModuleExtension;
@@ -54,7 +55,7 @@ public class NuGetFileHeader implements EditorNotificationProvider<EditorNotific
 		myProject = project;
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public Key<EditorNotificationPanel> getKey()
 	{
@@ -64,7 +65,7 @@ public class NuGetFileHeader implements EditorNotificationProvider<EditorNotific
 	@RequiredReadAction
 	@Nullable
 	@Override
-	public EditorNotificationPanel createNotificationPanel(@NotNull final VirtualFile file, @NotNull FileEditor fileEditor)
+	public EditorNotificationPanel createNotificationPanel(@Nonnull final VirtualFile file, @Nonnull FileEditor fileEditor)
 	{
 		if(file.getFileType() != XmlFileType.INSTANCE)
 		{

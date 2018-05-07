@@ -18,7 +18,8 @@ package consulo.nuget.api;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.openapi.util.text.StringUtil;
 
 /**
@@ -27,7 +28,7 @@ import com.intellij.openapi.util.text.StringUtil;
  */
 public class NuGetTargetFrameworkInfo
 {
-	public static NuGetTargetFrameworkInfo parse(@NotNull String targetFramework)
+	public static NuGetTargetFrameworkInfo parse(@Nonnull String targetFramework)
 	{
 		return new NuGetTargetFrameworkInfo(StringUtil.split(targetFramework, "+"));
 	}
@@ -39,7 +40,7 @@ public class NuGetTargetFrameworkInfo
 		myTargetFrameworks = targetFrameworks;
 	}
 
-	public boolean accept(@NotNull String framework)
+	public boolean accept(@Nonnull String framework)
 	{
 		return myTargetFrameworks.contains(framework);
 	}

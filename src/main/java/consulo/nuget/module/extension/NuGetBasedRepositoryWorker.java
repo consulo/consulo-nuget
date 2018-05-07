@@ -10,10 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.annotation.Nonnull;
+
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 import com.intellij.BundleBase;
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.notification.Notification;
@@ -155,20 +157,20 @@ public abstract class NuGetBasedRepositoryWorker
 	protected abstract String getPackagesDirPath();
 
 	@RequiredReadAction
-	protected abstract void loadDefinedPackages(@NotNull Consumer<PackageInfo> packageInfoConsumer);
+	protected abstract void loadDefinedPackages(@Nonnull Consumer<PackageInfo> packageInfoConsumer);
 
-	@NotNull
+	@Nonnull
 	public String getNameAndVersionSeparator()
 	{
 		return ".";
 	}
 
-	@NotNull
+	@Nonnull
 	public NuGetRepositoryManager getRepositoryManager()
 	{
 		return new NuGetRepositoryManager()
 		{
-			@NotNull
+			@Nonnull
 			@Override
 			public List<String> getRepositories()
 			{
@@ -191,7 +193,7 @@ public abstract class NuGetBasedRepositoryWorker
 		new Task.Backgroundable(myModule.getProject(), "Updating NuGet dependencies", false)
 		{
 			@Override
-			public void run(@NotNull ProgressIndicator indicator)
+			public void run(@Nonnull ProgressIndicator indicator)
 			{
 				try
 				{
@@ -326,11 +328,11 @@ public abstract class NuGetBasedRepositoryWorker
 		}.queue();
 	}
 
-	public void resolveDependencies(@NotNull ProgressIndicator indicator,
-			@NotNull NuGetRequestQueue requestQueue,
-			@NotNull NuGetRepositoryManager manager,
-			@NotNull Consumer<PackageInfo> packageInfoConsumer,
-			@NotNull Map<String, PackageInfo> map)
+	public void resolveDependencies(@Nonnull ProgressIndicator indicator,
+			@Nonnull NuGetRequestQueue requestQueue,
+			@Nonnull NuGetRepositoryManager manager,
+			@Nonnull Consumer<PackageInfo> packageInfoConsumer,
+			@Nonnull Map<String, PackageInfo> map)
 	{
 		PackageInfo[] packageInfos = map.values().toArray(new PackageInfo[map.size()]);
 
@@ -340,12 +342,12 @@ public abstract class NuGetBasedRepositoryWorker
 		}
 	}
 
-	private void resolveDependenciesImpl(@NotNull ProgressIndicator indicator,
-			@NotNull NuGetRequestQueue requestQueue,
-			@NotNull NuGetRepositoryManager manager,
-			@NotNull Consumer<PackageInfo> packageInfoConsumer,
-			@NotNull Map<String, PackageInfo> map,
-			@NotNull PackageInfo packageInfo)
+	private void resolveDependenciesImpl(@Nonnull ProgressIndicator indicator,
+			@Nonnull NuGetRequestQueue requestQueue,
+			@Nonnull NuGetRepositoryManager manager,
+			@Nonnull Consumer<PackageInfo> packageInfoConsumer,
+			@Nonnull Map<String, PackageInfo> map,
+			@Nonnull PackageInfo packageInfo)
 	{
 		NuGetPackageEntry packageEntry = packageInfo.getPackageEntry();
 		if(packageEntry == null)
@@ -397,7 +399,7 @@ public abstract class NuGetBasedRepositoryWorker
 		}
 	}
 
-	private boolean isAlreadyInstalled(@NotNull Map<String, PackageInfo> packageInfoMap, @NotNull NuGetDependency dependency)
+	private boolean isAlreadyInstalled(@Nonnull Map<String, PackageInfo> packageInfoMap, @Nonnull NuGetDependency dependency)
 	{
 		for(PackageInfo packageInfo : packageInfoMap.values())
 		{
@@ -410,29 +412,29 @@ public abstract class NuGetBasedRepositoryWorker
 	}
 
 	@Nullable
-	protected NuGetPackageEntry resolvePackageEntry(@NotNull final NuGetRepositoryManager repositoryManager,
-			@NotNull final ProgressIndicator indicator,
-			@NotNull final NuGetRequestQueue requestQueue,
-			@NotNull final String id,
-			@NotNull final String version)
+	protected NuGetPackageEntry resolvePackageEntry(@Nonnull final NuGetRepositoryManager repositoryManager,
+			@Nonnull final ProgressIndicator indicator,
+			@Nonnull final NuGetRequestQueue requestQueue,
+			@Nonnull final String id,
+			@Nonnull final String version)
 	{
 		return requestPackageEntries(repositoryManager, indicator, requestQueue, id).get(version);
 	}
 
 	@Nullable
-	private Collection<String> getVersionsForId(@NotNull final NuGetRepositoryManager repositoryManager,
-			@NotNull final ProgressIndicator indicator,
-			@NotNull NuGetRequestQueue requestQueue,
-			@NotNull String id)
+	private Collection<String> getVersionsForId(@Nonnull final NuGetRepositoryManager repositoryManager,
+			@Nonnull final ProgressIndicator indicator,
+			@Nonnull NuGetRequestQueue requestQueue,
+			@Nonnull String id)
 	{
 		return requestPackageEntries(repositoryManager, indicator, requestQueue, id).keySet();
 	}
 
-	@NotNull
-	protected Map<String, NuGetPackageEntry> requestPackageEntries(@NotNull final NuGetRepositoryManager repositoryManager,
-			@NotNull final ProgressIndicator indicator,
-			@NotNull final NuGetRequestQueue requestQueue,
-			@NotNull final String id)
+	@Nonnull
+	protected Map<String, NuGetPackageEntry> requestPackageEntries(@Nonnull final NuGetRepositoryManager repositoryManager,
+			@Nonnull final ProgressIndicator indicator,
+			@Nonnull final NuGetRequestQueue requestQueue,
+			@Nonnull final String id)
 	{
 		for(final String url : repositoryManager.getRepositories())
 		{
@@ -444,7 +446,7 @@ public abstract class NuGetBasedRepositoryWorker
 
 				{
 					@Override
-					public Map<String, NuGetPackageEntry> process(@NotNull HttpRequests.Request request) throws IOException
+					public Map<String, NuGetPackageEntry> process(@Nonnull HttpRequests.Request request) throws IOException
 					{
 						if(!request.isSuccessful())
 						{

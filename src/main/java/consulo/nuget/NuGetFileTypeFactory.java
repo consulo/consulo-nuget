@@ -16,7 +16,8 @@
 
 package consulo.nuget;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.openapi.fileTypes.ExtensionFileNameMatcher;
 import com.intellij.openapi.fileTypes.FileTypeConsumer;
@@ -29,7 +30,7 @@ import com.intellij.openapi.fileTypes.FileTypeFactory;
 public class NuGetFileTypeFactory extends FileTypeFactory
 {
 	@Override
-	public void createFileTypes(@NotNull FileTypeConsumer consumer)
+	public void createFileTypes(@Nonnull FileTypeConsumer consumer)
 	{
 		//FIXME [VISTALL] currenly its a problem - due we need always mark *.config files as XML
 		consumer.consume(XmlFileType.INSTANCE, new ExtensionFileNameMatcher("config"));

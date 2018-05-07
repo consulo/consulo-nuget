@@ -16,10 +16,10 @@
 
 package consulo.nuget.module.extension;
 
+import javax.annotation.Nonnull;
 import javax.swing.JComponent;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.StandardFileSystems;
@@ -33,7 +33,7 @@ import consulo.roots.ModuleRootLayer;
  */
 public class NuGetMutableModuleExtension extends NuGetModuleExtension implements MutableModuleExtension<NuGetModuleExtension>
 {
-	public NuGetMutableModuleExtension(@NotNull String id, @NotNull ModuleRootLayer moduleRootLayer)
+	public NuGetMutableModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer moduleRootLayer)
 	{
 		super(id, moduleRootLayer);
 	}
@@ -52,7 +52,7 @@ public class NuGetMutableModuleExtension extends NuGetModuleExtension implements
 
 	@Nullable
 	@Override
-	public JComponent createConfigurablePanel(@NotNull Runnable runnable)
+	public JComponent createConfigurablePanel(@Nonnull Runnable runnable)
 	{
 		return new NuGetConfigPanel(this);
 	}
@@ -64,7 +64,7 @@ public class NuGetMutableModuleExtension extends NuGetModuleExtension implements
 	}
 
 	@Override
-	public boolean isModified(@NotNull NuGetModuleExtension nuGetModuleExtension)
+	public boolean isModified(@Nonnull NuGetModuleExtension nuGetModuleExtension)
 	{
 		return myIsEnabled != nuGetModuleExtension.isEnabled() || !Comparing.equal(myConfigFileUrl, nuGetModuleExtension.myConfigFileUrl);
 	}

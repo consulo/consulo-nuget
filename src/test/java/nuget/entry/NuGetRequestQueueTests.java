@@ -18,7 +18,8 @@ package nuget.entry;
 
 import java.io.IOException;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import org.junit.Assert;
 import org.junit.Test;
 import com.intellij.util.io.HttpRequests;
@@ -48,7 +49,7 @@ public class NuGetRequestQueueTests extends Assert
 		final String kExpectedResult = "expected_result";
 		String result = testObj.request(url, new HttpRequests.RequestProcessor<String>() {
 			@Override
-			public String process(@NotNull HttpRequests.Request request) throws IOException
+			public String process(@Nonnull HttpRequests.Request request) throws IOException
 			{
 				System.out.println("Request Successful:" + request.isSuccessful());
 				return kExpectedResult;

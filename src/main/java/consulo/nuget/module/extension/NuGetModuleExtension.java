@@ -16,9 +16,11 @@
 
 package consulo.nuget.module.extension;
 
+import javax.annotation.Nonnull;
+
 import org.jdom.Element;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 import com.intellij.openapi.util.NotNullLazyValue;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -44,21 +46,21 @@ public class NuGetModuleExtension extends ModuleExtensionImpl<NuGetModuleExtensi
 	private final NotNullLazyValue<NuGetRepositoryWorker> myWorkerValue = NotNullLazyValue.createValue(() -> new NuGetRepositoryWorker(this));
 	protected String myConfigFileUrl;
 
-	public NuGetModuleExtension(@NotNull String id, @NotNull ModuleRootLayer moduleRootLayer)
+	public NuGetModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer moduleRootLayer)
 	{
 		super(id, moduleRootLayer);
 	}
 
 	@RequiredReadAction
 	@Override
-	public void commit(@NotNull NuGetModuleExtension mutableModuleExtension)
+	public void commit(@Nonnull NuGetModuleExtension mutableModuleExtension)
 	{
 		super.commit(mutableModuleExtension);
 		myConfigFileUrl = StringUtil.nullize(mutableModuleExtension.myConfigFileUrl, true);
 	}
 
 	@Override
-	protected void getStateImpl(@NotNull Element element)
+	protected void getStateImpl(@Nonnull Element element)
 	{
 		if(myConfigFileUrl != null)
 		{
@@ -68,12 +70,12 @@ public class NuGetModuleExtension extends ModuleExtensionImpl<NuGetModuleExtensi
 
 	@RequiredReadAction
 	@Override
-	protected void loadStateImpl(@NotNull Element element)
+	protected void loadStateImpl(@Nonnull Element element)
 	{
 		myConfigFileUrl = element.getAttributeValue("config-file-url");
 	}
 
-	@NotNull
+	@Nonnull
 	public NuGetRepositoryWorker getWorker()
 	{
 		return myWorkerValue.getValue();

@@ -16,7 +16,7 @@
 
 package consulo.nuget.api;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL
@@ -24,5 +24,5 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface NuGetDependencyVersionInfo
 {
-	boolean is(@NotNull NuGetVersion version);
+	boolean is(@Nonnull NuGetVersion version);
 }

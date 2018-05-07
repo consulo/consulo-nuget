@@ -16,7 +16,8 @@
 
 package consulo.nuget.dom;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.util.xml.Attribute;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
@@ -28,17 +29,17 @@ import com.intellij.util.xml.Required;
  */
 public interface NuGetPackage extends DomElement
 {
-	@NotNull
+	@Nonnull
 	@Attribute
 	@Required
 	GenericAttributeValue<String> getId();
 
-	@NotNull
+	@Nonnull
 	@Attribute
 	@Required
 	GenericAttributeValue<String> getVersion();
 
-	@NotNull
+	@Nonnull
 	@Attribute("targetFramework")
 	@Required
 	GenericAttributeValue<String> getTargetFramework();

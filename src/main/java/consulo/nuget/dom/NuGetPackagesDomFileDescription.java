@@ -16,10 +16,10 @@
 
 package consulo.nuget.dom;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.Icon;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import consulo.nuget.module.extension.NuGetModuleExtension;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
@@ -43,7 +43,7 @@ public class NuGetPackagesDomFileDescription extends DomFileDescription<NuGetPac
 	}
 
 	@Override
-	public boolean isMyFile(@NotNull XmlFile file)
+	public boolean isMyFile(@Nonnull XmlFile file)
 	{
 		VirtualFile virtualFile = file.getVirtualFile();
 		if(virtualFile == null)

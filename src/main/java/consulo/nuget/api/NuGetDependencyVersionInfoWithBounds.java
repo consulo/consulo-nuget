@@ -16,7 +16,7 @@
 
 package consulo.nuget.api;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL
@@ -41,7 +41,7 @@ public class NuGetDependencyVersionInfoWithBounds implements NuGetDependencyVers
 	}
 
 	@Override
-	public boolean is(@NotNull NuGetVersion version)
+	public boolean is(@Nonnull NuGetVersion version)
 	{
 		if(myMinCompareType != null)
 		{
@@ -61,7 +61,7 @@ public class NuGetDependencyVersionInfoWithBounds implements NuGetDependencyVers
 		return true;
 	}
 
-	private static boolean compare(@NotNull NuGetCompareType compareType, @NotNull NuGetVersion v1, @NotNull NuGetVersion v2)
+	private static boolean compare(@Nonnull NuGetCompareType compareType, @Nonnull NuGetVersion v1, @Nonnull NuGetVersion v2)
 	{
 		int compareValue = v2.compareTo(v1);
 		switch(compareType)

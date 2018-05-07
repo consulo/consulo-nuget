@@ -18,7 +18,7 @@ package consulo.nuget.dom;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.util.xml.DefinesXml;
 import com.intellij.util.xml.DomElement;
 
@@ -29,6 +29,6 @@ import com.intellij.util.xml.DomElement;
 @DefinesXml
 public interface NuGetPackagesFile extends DomElement
 {
-	@NotNull
+	@Nonnull
 	List<NuGetPackage> getPackages();
 }
