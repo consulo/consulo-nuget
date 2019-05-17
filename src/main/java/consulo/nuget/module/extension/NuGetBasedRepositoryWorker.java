@@ -1,28 +1,11 @@
 package consulo.nuget.module.extension;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.annotation.Nonnull;
-
-import org.jdom.Element;
-import org.jdom.JDOMException;
-
-import javax.annotation.Nullable;
 import com.intellij.BundleBase;
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.Result;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
@@ -47,15 +30,21 @@ import com.intellij.util.io.DownloadUtil;
 import com.intellij.util.io.HttpRequests;
 import consulo.annotations.RequiredReadAction;
 import consulo.dotnet.dll.DotNetModuleFileType;
-import consulo.nuget.api.NuGetDependency;
-import consulo.nuget.api.NuGetPackageEntry;
-import consulo.nuget.api.NuGetPackageEntryParser;
-import consulo.nuget.api.NuGetTargetFrameworkInfo;
-import consulo.nuget.api.NuGetVersion;
+import consulo.nuget.api.*;
 import consulo.nuget.util.NuPkgUtil;
 import consulo.roots.types.BinariesOrderRootType;
 import consulo.roots.types.DocumentationOrderRootType;
 import consulo.vfs.util.ArchiveVfsUtil;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author VISTALL
@@ -329,10 +318,10 @@ public abstract class NuGetBasedRepositoryWorker
 	}
 
 	public void resolveDependencies(@Nonnull ProgressIndicator indicator,
-			@Nonnull NuGetRequestQueue requestQueue,
-			@Nonnull NuGetRepositoryManager manager,
-			@Nonnull Consumer<PackageInfo> packageInfoConsumer,
-			@Nonnull Map<String, PackageInfo> map)
+									@Nonnull NuGetRequestQueue requestQueue,
+									@Nonnull NuGetRepositoryManager manager,
+									@Nonnull Consumer<PackageInfo> packageInfoConsumer,
+									@Nonnull Map<String, PackageInfo> map)
 	{
 		PackageInfo[] packageInfos = map.values().toArray(new PackageInfo[map.size()]);
 
@@ -343,11 +332,11 @@ public abstract class NuGetBasedRepositoryWorker
 	}
 
 	private void resolveDependenciesImpl(@Nonnull ProgressIndicator indicator,
-			@Nonnull NuGetRequestQueue requestQueue,
-			@Nonnull NuGetRepositoryManager manager,
-			@Nonnull Consumer<PackageInfo> packageInfoConsumer,
-			@Nonnull Map<String, PackageInfo> map,
-			@Nonnull PackageInfo packageInfo)
+										 @Nonnull NuGetRequestQueue requestQueue,
+										 @Nonnull NuGetRepositoryManager manager,
+										 @Nonnull Consumer<PackageInfo> packageInfoConsumer,
+										 @Nonnull Map<String, PackageInfo> map,
+										 @Nonnull PackageInfo packageInfo)
 	{
 		NuGetPackageEntry packageEntry = packageInfo.getPackageEntry();
 		if(packageEntry == null)
@@ -413,28 +402,28 @@ public abstract class NuGetBasedRepositoryWorker
 
 	@Nullable
 	protected NuGetPackageEntry resolvePackageEntry(@Nonnull final NuGetRepositoryManager repositoryManager,
-			@Nonnull final ProgressIndicator indicator,
-			@Nonnull final NuGetRequestQueue requestQueue,
-			@Nonnull final String id,
-			@Nonnull final String version)
+													@Nonnull final ProgressIndicator indicator,
+													@Nonnull final NuGetRequestQueue requestQueue,
+													@Nonnull final String id,
+													@Nonnull final String version)
 	{
 		return requestPackageEntries(repositoryManager, indicator, requestQueue, id).get(version);
 	}
 
 	@Nullable
 	private Collection<String> getVersionsForId(@Nonnull final NuGetRepositoryManager repositoryManager,
-			@Nonnull final ProgressIndicator indicator,
-			@Nonnull NuGetRequestQueue requestQueue,
-			@Nonnull String id)
+												@Nonnull final ProgressIndicator indicator,
+												@Nonnull NuGetRequestQueue requestQueue,
+												@Nonnull String id)
 	{
 		return requestPackageEntries(repositoryManager, indicator, requestQueue, id).keySet();
 	}
 
 	@Nonnull
 	protected Map<String, NuGetPackageEntry> requestPackageEntries(@Nonnull final NuGetRepositoryManager repositoryManager,
-			@Nonnull final ProgressIndicator indicator,
-			@Nonnull final NuGetRequestQueue requestQueue,
-			@Nonnull final String id)
+																   @Nonnull final ProgressIndicator indicator,
+																   @Nonnull final NuGetRequestQueue requestQueue,
+																   @Nonnull final String id)
 	{
 		for(final String url : repositoryManager.getRepositories())
 		{
@@ -535,14 +524,8 @@ public abstract class NuGetBasedRepositoryWorker
 			modifiableModel.commit();
 		}
 
-		new WriteAction<Object>()
-		{
-			@Override
-			protected void run(Result<Object> result) throws Throwable
-			{
-				modifiableRootModel.commit();
-			}
-		}.execute();
+		WriteAction.run(modifiableRootModel::commit);
+
 		indicator.setText(null);
 	}
 
@@ -608,14 +591,7 @@ public abstract class NuGetBasedRepositoryWorker
 			}
 		}
 
-		new WriteAction<Object>()
-		{
-			@Override
-			protected void run(Result<Object> result) throws Throwable
-			{
-				modifiableModel.commit();
-			}
-		}.execute();
+		WriteAction.run(modifiableModel::commit);
 
 		indicator.setText(null);
 	}
@@ -630,38 +606,34 @@ public abstract class NuGetBasedRepositoryWorker
 			return;
 		}
 
-		new WriteAction<Object>()
+		WriteAction.run(() ->
 		{
-			@Override
-			protected void run(Result<Object> result) throws Throwable
+			VirtualFile packagesDir = LocalFileSystem.getInstance().findFileByPath(getPackagesDirPath());
+			if(packagesDir == null)
 			{
-				VirtualFile packagesDir = LocalFileSystem.getInstance().findFileByPath(getPackagesDirPath());
-				if(packagesDir == null)
+				return;
+			}
+			for(VirtualFile virtualFile : packagesDir.getChildren())
+			{
+				if(!virtualFile.isDirectory())
 				{
-					return;
+					continue;
 				}
-				for(VirtualFile virtualFile : packagesDir.getChildren())
-				{
-					if(!virtualFile.isDirectory())
-					{
-						continue;
-					}
 
-					PackageInfo nuGetPackage = packages.get(virtualFile.getName());
-					if(nuGetPackage == null)
+				PackageInfo nuGetPackage = packages.get(virtualFile.getName());
+				if(nuGetPackage == null)
+				{
+					try
 					{
-						try
-						{
-							virtualFile.delete(null);
-						}
-						catch(IOException e)
-						{
-							//
-						}
+						virtualFile.delete(null);
+					}
+					catch(IOException e)
+					{
+						//
 					}
 				}
 			}
-		}.execute();
+		});
 		indicator.setText(null);
 	}
 
