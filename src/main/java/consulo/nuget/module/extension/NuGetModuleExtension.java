@@ -16,11 +16,6 @@
 
 package consulo.nuget.module.extension;
 
-import javax.annotation.Nonnull;
-
-import org.jdom.Element;
-
-import javax.annotation.Nullable;
 import com.intellij.openapi.util.NotNullLazyValue;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -30,10 +25,14 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.xml.DomFileElement;
 import com.intellij.util.xml.DomManager;
-import consulo.annotations.RequiredReadAction;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.module.extension.impl.ModuleExtensionImpl;
 import consulo.nuget.dom.NuGetPackagesFile;
 import consulo.roots.ModuleRootLayer;
+import org.jdom.Element;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author VISTALL

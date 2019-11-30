@@ -16,13 +16,6 @@
 
 package consulo.nuget;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import consulo.nuget.dom.NuGetPackagesFile;
-import consulo.nuget.module.extension.NuGetModuleExtension;
-import consulo.nuget.module.extension.NuGetMutableModuleExtension;
-import consulo.nuget.module.extension.NuGetRepositoryWorker;
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.FileEditor;
@@ -37,9 +30,16 @@ import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.EditorNotificationPanel;
 import com.intellij.ui.EditorNotifications;
-import consulo.annotations.RequiredDispatchThread;
-import consulo.annotations.RequiredReadAction;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.editor.notifications.EditorNotificationProvider;
+import consulo.nuget.dom.NuGetPackagesFile;
+import consulo.nuget.module.extension.NuGetModuleExtension;
+import consulo.nuget.module.extension.NuGetMutableModuleExtension;
+import consulo.nuget.module.extension.NuGetRepositoryWorker;
+import consulo.ui.annotation.RequiredUIAccess;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author VISTALL
@@ -113,7 +113,7 @@ public class NuGetFileHeader implements EditorNotificationProvider<EditorNotific
 			editorNotificationPanel.createActionLabel("Remove NuGet support", new Runnable()
 			{
 				@Override
-				@RequiredDispatchThread
+				@RequiredUIAccess
 				public void run()
 				{
 					final ModifiableRootModel modifiableModel = ModuleRootManager.getInstance(moduleForPsiElement).getModifiableModel();

@@ -16,13 +16,14 @@
 
 package consulo.nuget.module.extension;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import consulo.nuget.dom.NuGetPackage;
-import consulo.nuget.dom.NuGetPackagesFile;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Consumer;
-import consulo.annotations.RequiredReadAction;
+import consulo.annotation.access.RequiredReadAction;
+import consulo.nuget.dom.NuGetPackage;
+import consulo.nuget.dom.NuGetPackagesFile;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author VISTALL

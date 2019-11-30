@@ -28,7 +28,7 @@ import com.intellij.util.ArrayUtil;
 import com.intellij.util.Consumer;
 import com.intellij.util.io.DownloadUtil;
 import com.intellij.util.io.HttpRequests;
-import consulo.annotations.RequiredReadAction;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.dotnet.dll.DotNetModuleFileType;
 import consulo.nuget.api.*;
 import consulo.nuget.util.NuPkgUtil;
