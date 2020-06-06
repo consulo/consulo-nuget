@@ -16,20 +16,19 @@
 
 package nuget.entry;
 
-import java.io.IOException;
-
-import javax.annotation.Nonnull;
-
-import org.junit.Assert;
-import org.junit.Test;
 import com.intellij.util.io.HttpRequests;
 import consulo.nuget.module.extension.NuGetRequestQueue;
+import org.junit.Assert;
+import org.junit.Test;
+
+import javax.annotation.Nonnull;
+import java.io.IOException;
 
 /**
  * @author VISTALL
  * @since 15.10.2015
  */
-public class NuGetRequestQueueTests extends Assert
+public abstract class NuGetRequestQueueTests extends Assert
 {
 	private final NuGetRequestQueue testObj = new NuGetRequestQueue();
 
