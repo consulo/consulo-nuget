@@ -18,7 +18,7 @@
 	<extensions defaultExtensionNs="com.intellij">
 		<moduleExtensionProvider key="microsoft-nuget"
 								 parentKey="microsoft-dotnet"
-								 icon="/icons/nuget.png"
+								 icon="consulo.nuget.NuGetIconGroup@nuget"
 								 name="NuGet"
 								 immutableClass="consulo.nuget.module.extension.NuGetModuleExtension"
 								 mutableClass="consulo.nuget.module.extension.NuGetMutableModuleExtension" />

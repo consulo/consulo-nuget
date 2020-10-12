@@ -27,9 +27,9 @@ import com.intellij.openapi.util.Iconable;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.xml.DomFileDescription;
+import consulo.nuget.icon.NuGetIconGroup;
 import consulo.nuget.module.extension.NuGetModuleExtension;
 import consulo.ui.image.Image;
-import icons.NuGetIcons;
 
 /**
  * @author VISTALL
@@ -64,6 +64,6 @@ public class NuGetPackagesDomFileDescription extends DomFileDescription<NuGetPac
 	@Override
 	public Image getFileIcon(@Iconable.IconFlags int flags)
 	{
-		return NuGetIcons.NuGet;
+		return NuGetIconGroup.nuget();
 	}
 }
