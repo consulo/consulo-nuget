@@ -24,7 +24,7 @@
 	<depends config-file="consulo.dotnet.microsoft.xml" optional="true">consulo.dotnet.microsoft</depends>
 
 	<actions>
-		<action id="ManageNuGetPackages" icon="consulo.nuget.NuGetIconGroup@nuget" class="consulo.nuget.action.ManageNuGetPackagesAction"/>
+		<action id="NuGet.ManageNuGetPackages" icon="consulo.nuget.NuGetIconGroup@nuget" class="consulo.nuget.action.ManageNuGetPackagesAction"/>
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij.xml">

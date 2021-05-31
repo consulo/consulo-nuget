@@ -93,8 +93,9 @@ public class NuGetFileHeader implements EditorNotificationProvider<EditorNotific
 
 		if(!worker.isUpdateInProgress())
 		{
-			editorNotificationPanel.createActionLabel("Update dependencies", () -> worker.forceUpdate());
-			editorNotificationPanel.createActionLabel("Remove NuGet support", new Runnable()
+			editorNotificationPanel.createActionLabel("Update Packages", () -> worker.forceUpdate());
+			editorNotificationPanel.createActionLabel("Manage Packages", "NuGet.ManageNuGetPackages");
+			editorNotificationPanel.createActionLabel("Remove NuGet Support", new Runnable()
 			{
 				@Override
 				@RequiredUIAccess
