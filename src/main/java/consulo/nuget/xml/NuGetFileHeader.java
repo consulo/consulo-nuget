@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package consulo.nuget;
+package consulo.nuget.xml;
 
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.openapi.application.ApplicationManager;
@@ -31,10 +31,10 @@ import com.intellij.ui.EditorNotificationPanel;
 import com.intellij.ui.EditorNotifications;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.editor.notifications.EditorNotificationProvider;
-import consulo.nuget.dom.NuGetPackagesFile;
-import consulo.nuget.module.extension.NuGetModuleExtension;
-import consulo.nuget.module.extension.NuGetMutableModuleExtension;
-import consulo.nuget.module.extension.NuGetRepositoryWorker;
+import consulo.nuget.xml.module.extension.NuGetXmlPackagesFile;
+import consulo.nuget.xml.module.extension.NuGetOldModuleExtension;
+import consulo.nuget.xml.module.extension.NuGetOldMutableModuleExtension;
+import consulo.nuget.xml.module.extension.NuGetRepositoryWorker;
 import consulo.ui.annotation.RequiredUIAccess;
 
 import javax.annotation.Nonnull;
@@ -69,7 +69,7 @@ public class NuGetFileHeader implements EditorNotificationProvider<EditorNotific
 			return null;
 		}
 
-		NuGetModuleExtension extension = ModuleUtil.getExtension(moduleForPsiElement, NuGetModuleExtension.class);
+		NuGetOldModuleExtension extension = ModuleUtil.getExtension(moduleForPsiElement, NuGetOldModuleExtension.class);
 		if(extension == null)
 		{
 			return null;
@@ -80,7 +80,7 @@ public class NuGetFileHeader implements EditorNotificationProvider<EditorNotific
 			return null;
 		}
 
-		NuGetPackagesFile packagesFile = extension.getPackagesFile();
+		NuGetXmlPackagesFile packagesFile = extension.getPackagesFile();
 		if(packagesFile == null)
 		{
 			return null;
@@ -93,14 +93,7 @@ public class NuGetFileHeader implements EditorNotificationProvider<EditorNotific
 
 		if(!worker.isUpdateInProgress())
 		{
-			editorNotificationPanel.createActionLabel("Update dependencies", new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					worker.forceUpdate();
-				}
-			});
+			editorNotificationPanel.createActionLabel("Update dependencies", () -> worker.forceUpdate());
 			editorNotificationPanel.createActionLabel("Remove NuGet support", new Runnable()
 			{
 				@Override
@@ -111,7 +104,7 @@ public class NuGetFileHeader implements EditorNotificationProvider<EditorNotific
 
 					worker.cancelTasks();
 
-					NuGetMutableModuleExtension mutableModuleExtension = modifiableModel.getExtension(NuGetMutableModuleExtension.class);
+					NuGetOldMutableModuleExtension mutableModuleExtension = modifiableModel.getExtension(NuGetOldMutableModuleExtension.class);
 					assert mutableModuleExtension != null;
 					mutableModuleExtension.setEnabled(false);
 

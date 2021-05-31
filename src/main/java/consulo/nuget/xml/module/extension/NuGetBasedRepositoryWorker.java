@@ -1,6 +1,6 @@
-package consulo.nuget.module.extension;
+package consulo.nuget.xml.module.extension;
 
-import com.intellij.BundleBase;
+import com.google.gson.Gson;
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
@@ -26,14 +26,17 @@ import com.intellij.ui.EditorNotifications;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.Consumer;
 import com.intellij.util.io.DownloadUtil;
-import com.intellij.util.io.HttpRequests;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.dotnet.dll.DotNetModuleFileType;
+import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
 import consulo.nuget.api.*;
+import consulo.nuget.api.v3.Index;
+import consulo.nuget.api.v3.PackageBaseAddressIndex;
 import consulo.nuget.util.NuPkgUtil;
 import consulo.roots.types.BinariesOrderRootType;
 import consulo.roots.types.DocumentationOrderRootType;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.vfs.util.ArchiveVfsUtil;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -52,7 +55,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public abstract class NuGetBasedRepositoryWorker
 {
-	private static final Logger LOGGER = Logger.getInstance(NuGetBasedRepositoryWorker.class);
+	private static final Logger LOG = Logger.getInstance(NuGetBasedRepositoryWorker.class);
 
 	public static class PackageInfo
 	{
@@ -132,8 +135,6 @@ public abstract class NuGetBasedRepositoryWorker
 	public static final String NUGET_LIBRARY_PREFIX = "nuget: ";
 	public static final String PACKAGES_DIR = "packages";
 
-	private static final String ourPackagesFilterPattern = "{0}/Packages()?$filter=Id%20eq%20%27{1}%27&includePrerelease=true";
-
 	protected final AtomicBoolean myProgress = new AtomicBoolean();
 	protected final Module myModule;
 
@@ -163,7 +164,7 @@ public abstract class NuGetBasedRepositoryWorker
 			@Override
 			public List<String> getRepositories()
 			{
-				return Collections.singletonList("http://nuget.org/api/v2");
+				return List.of("https://api.nuget.org/v3/");
 			}
 		};
 	}
@@ -187,27 +188,15 @@ public abstract class NuGetBasedRepositoryWorker
 				try
 				{
 					final Map<String, PackageInfo> packageMap = new LinkedHashMap<String, PackageInfo>();
-					final Consumer<PackageInfo> packageInfoConsumer = new Consumer<PackageInfo>()
-					{
-						@Override
-						public void consume(PackageInfo packageInfo)
+					final Consumer<PackageInfo> packageInfoConsumer = packageInfo -> {
+						String key = packageInfo.getId() + getNameAndVersionSeparator() + packageInfo.getVersion();
+						if(!packageMap.containsKey(key))
 						{
-							String key = packageInfo.getId() + getNameAndVersionSeparator() + packageInfo.getVersion();
-							if(!packageMap.containsKey(key))
-							{
-								packageMap.put(key, packageInfo);
-							}
+							packageMap.put(key, packageInfo);
 						}
 					};
 
-					ApplicationManager.getApplication().runReadAction(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							loadDefinedPackages(packageInfoConsumer);
-						}
-					});
+					ApplicationManager.getApplication().runReadAction(() -> loadDefinedPackages(packageInfoConsumer));
 
 					NuGetRepositoryManager repositoryManager = getRepositoryManager();
 
@@ -243,7 +232,7 @@ public abstract class NuGetBasedRepositoryWorker
 						PackageInfo value = entry.getValue();
 
 						NuGetPackageEntry packageEntry = value.getPackageEntry();
-						String downloadUrl = packageEntry == null ? null : packageEntry.getContentUrl();
+						String downloadUrl = packageEntry == null ? null : packageEntry.contentUrl();
 						if(downloadUrl == null)
 						{
 							Notifications.Bus.notify(new Notification("NuGet", "Warning", "Package is not resolved with id: " + value.getId() +
@@ -298,10 +287,11 @@ public abstract class NuGetBasedRepositoryWorker
 				}
 				catch(Exception e)
 				{
-					NuGetBasedRepositoryWorker.LOGGER.error(e);
+					NuGetBasedRepositoryWorker.LOG.error(e);
 				}
 			}
 
+			@RequiredUIAccess
 			@Override
 			public void onSuccess()
 			{
@@ -309,6 +299,7 @@ public abstract class NuGetBasedRepositoryWorker
 				EditorNotifications.updateAll();
 			}
 
+			@RequiredUIAccess
 			@Override
 			public void onCancel()
 			{
@@ -344,7 +335,7 @@ public abstract class NuGetBasedRepositoryWorker
 			return;
 		}
 
-		List<NuGetDependency> dependencies = packageEntry.getDependencies();
+		List<NuGetDependency> dependencies = packageEntry.dependencies();
 
 		for(NuGetDependency dependency : dependencies)
 		{
@@ -407,7 +398,44 @@ public abstract class NuGetBasedRepositoryWorker
 													@Nonnull final String id,
 													@Nonnull final String version)
 	{
-		return requestPackageEntries(repositoryManager, indicator, requestQueue, id).get(version);
+		for(final String url : repositoryManager.getRepositories())
+		{
+			try
+			{
+				indicator.setText("NuGet: Getting info about " + id + ":" + version + " package from " + url);
+
+				try
+				{
+					Index index = Index.call(url, indicator);
+
+					String packBaseUrl = index.getURL(Index.PackageBaseAddress);
+
+					String resultUrl = packBaseUrl + id.toLowerCase(Locale.ROOT) + "/" + version.toLowerCase(Locale.ROOT) + "/" + id.toLowerCase(Locale.ROOT) + ".nuspec";
+					
+					return requestQueue.request(resultUrl, request -> {
+						try
+						{
+							Element rootElement = JDOMUtil.loadDocument(request.readBytes(indicator)).getRootElement();
+							return NuGetPackageEntryParser.parseSingle(rootElement, packBaseUrl, url);
+						}
+						catch(JDOMException e)
+						{
+							throw new IOException(e);
+						}
+					});
+				}
+				catch(IOException e)
+				{
+					LOG.warn(e);
+				}
+			}
+			finally
+			{
+				indicator.setTextValue(LocalizeValue.of());
+			}
+		}
+
+		return null;
 	}
 
 	@Nullable
@@ -416,58 +444,36 @@ public abstract class NuGetBasedRepositoryWorker
 												@Nonnull NuGetRequestQueue requestQueue,
 												@Nonnull String id)
 	{
-		return requestPackageEntries(repositoryManager, indicator, requestQueue, id).keySet();
-	}
-
-	@Nonnull
-	protected Map<String, NuGetPackageEntry> requestPackageEntries(@Nonnull final NuGetRepositoryManager repositoryManager,
-																   @Nonnull final ProgressIndicator indicator,
-																   @Nonnull final NuGetRequestQueue requestQueue,
-																   @Nonnull final String id)
-	{
 		for(final String url : repositoryManager.getRepositories())
 		{
 			try
 			{
 				indicator.setText("NuGet: Getting info about " + id + " package from " + url);
 
-				Map<String, NuGetPackageEntry> map = requestQueue.request(BundleBase.format(ourPackagesFilterPattern, url, id), new HttpRequests.RequestProcessor<Map<String, NuGetPackageEntry>>()
-
+				try
 				{
-					@Override
-					public Map<String, NuGetPackageEntry> process(@Nonnull HttpRequests.Request request) throws IOException
-					{
-						if(!request.isSuccessful())
-						{
-							return null;
-						}
-						try
-						{
-							Element rootElement = JDOMUtil.loadDocument(request.readBytes(indicator)).getRootElement();
-							return NuGetPackageEntryParser.parse(rootElement, id, url);
-						}
-						catch(JDOMException e)
-						{
-							throw new IOException(e);
-						}
-					}
-				});
+					Index index = Index.call(url, indicator);
 
-				if(map == null)
-				{
-					continue;
+					String packBase = index.getURL(Index.PackageBaseAddress);
+
+					PackageBaseAddressIndex i = requestQueue.request(packBase + id.toLowerCase(Locale.ROOT) + "/index.json", request -> {
+						return new Gson().fromJson(request.readString(indicator), PackageBaseAddressIndex.class);
+					});
+
+					return List.of(i.versions);
 				}
-
-				return map;
+				catch(IOException e)
+				{
+					LOG.warn(e);
+				}
 			}
 			finally
 			{
 				indicator.setText(null);
 			}
 		}
-		return Collections.emptyMap();
+		return List.of();
 	}
-
 
 	protected void addDependenciesToModule(Map<PackageInfo, VirtualFile> packages, ProgressIndicator indicator)
 	{
@@ -524,7 +530,7 @@ public abstract class NuGetBasedRepositoryWorker
 			modifiableModel.commit();
 		}
 
-		WriteAction.run(modifiableRootModel::commit);
+		WriteAction.runAndWait(modifiableRootModel::commit);
 
 		indicator.setText(null);
 	}
@@ -591,7 +597,7 @@ public abstract class NuGetBasedRepositoryWorker
 			}
 		}
 
-		WriteAction.run(modifiableModel::commit);
+		WriteAction.runAndWait(modifiableModel::commit);
 
 		indicator.setText(null);
 	}
@@ -606,7 +612,7 @@ public abstract class NuGetBasedRepositoryWorker
 			return;
 		}
 
-		WriteAction.run(() ->
+		WriteAction.runAndWait(() ->
 		{
 			VirtualFile packagesDir = LocalFileSystem.getInstance().findFileByPath(getPackagesDirPath());
 			if(packagesDir == null)

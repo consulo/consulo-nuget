@@ -22,52 +22,6 @@ import java.util.List;
  * @author VISTALL
  * @since 23.02.2015
  */
-public class NuGetPackageEntry
+public record NuGetPackageEntry(String id, String version, String contentType, String contentUrl, List<NuGetDependency> dependencies, List<NuGetFrameworkDependency> frameworkDependencies, String repoUrl)
 {
-	private final String myId;
-	private final String myVersion;
-	private final String myContentType;
-	private final String myContentUrl;
-	private final List<NuGetDependency> myDependencies;
-	private final String myRepoUrl;
-
-	public NuGetPackageEntry(String id, String version, String contentType, String contentUrl, List<NuGetDependency> dependencies, String repoUrl)
-	{
-		myId = id;
-		myVersion = version;
-		myContentType = contentType;
-		myContentUrl = contentUrl;
-		myDependencies = dependencies;
-		myRepoUrl = repoUrl;
-	}
-
-	public String getRepoUrl()
-	{
-		return myRepoUrl;
-	}
-
-	public List<NuGetDependency> getDependencies()
-	{
-		return myDependencies;
-	}
-
-	public String getContentType()
-	{
-		return myContentType;
-	}
-
-	public String getContentUrl()
-	{
-		return myContentUrl;
-	}
-
-	public String getId()
-	{
-		return myId;
-	}
-
-	public String getVersion()
-	{
-		return myVersion;
-	}
 }

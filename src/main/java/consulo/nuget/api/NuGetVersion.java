@@ -16,13 +16,13 @@
 
 package consulo.nuget.api;
 
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.ObjectUtil;
 import consulo.dotnet.util.ArrayUtil2;
+import consulo.logging.Logger;
+
+import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * @author VISTALL
@@ -30,7 +30,7 @@ import consulo.dotnet.util.ArrayUtil2;
  */
 public class NuGetVersion
 {
-	private static final Logger LOGGER = Logger.getInstance(NuGetVersion.class);
+	private static final Logger LOG = Logger.getInstance(NuGetVersion.class);
 
 	public static NuGetVersion parseVersion(String v)
 	{
@@ -100,7 +100,7 @@ public class NuGetVersion
 		}
 		catch(Exception e)
 		{
-			LOGGER.error("Problem with parsing version '" + v + "'", e);
+			LOG.error("Problem with parsing version '" + v + "'", e);
 			return new NuGetVersion(0, 0, 0);
 		}
 	}

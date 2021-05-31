@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 must-be.org
+ * Copyright 2013-2015 must-be.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,17 @@
  * limitations under the License.
  */
 
-package consulo.nuget.dom;
+package consulo.nuget.xml.module.extension;
 
 import javax.annotation.Nonnull;
-
-import com.intellij.util.xml.Attribute;
-import com.intellij.util.xml.DomElement;
-import com.intellij.util.xml.GenericAttributeValue;
-import com.intellij.util.xml.Required;
+import java.util.List;
 
 /**
  * @author VISTALL
- * @since 24.11.14
+ * @since 23.02.2015
  */
-public interface NuGetPackage extends DomElement
+public interface NuGetRepositoryManager
 {
 	@Nonnull
-	@Attribute
-	@Required
-	GenericAttributeValue<String> getId();
-
-	@Nonnull
-	@Attribute
-	@Required
-	GenericAttributeValue<String> getVersion();
-
-	@Nonnull
-	@Attribute("targetFramework")
-	@Required
-	GenericAttributeValue<String> getTargetFramework();
+	List<String> getRepositories();
 }

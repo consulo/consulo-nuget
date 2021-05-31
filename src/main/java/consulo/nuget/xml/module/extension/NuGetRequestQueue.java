@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package consulo.nuget.module.extension;
+package consulo.nuget.xml.module.extension;
 
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.util.io.HttpRequests;
 import gnu.trove.THashMap;
 
 import java.io.IOException;
 import java.util.Map;
-
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.util.io.HttpRequests;
 
 /**
  * @author VISTALL

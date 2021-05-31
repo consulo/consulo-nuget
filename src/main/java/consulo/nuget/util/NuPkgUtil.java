@@ -16,22 +16,16 @@
 
 package consulo.nuget.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.util.io.URLUtil;
 import com.intellij.util.io.ZipUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.*;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * @author VISTALL
@@ -52,14 +46,9 @@ public class NuPkgUtil
 			@Nullable FilenameFilter filenameFilter,
 			boolean overwrite) throws IOException
 	{
-		final ZipFile zipFile = new ZipFile(file);
-		try
+		try (ZipFile zipFile = new ZipFile(file))
 		{
 			extract(zipFile, outputDir, filenameFilter, overwrite);
-		}
-		finally
-		{
-			zipFile.close();
 		}
 	}
 
@@ -107,16 +96,9 @@ public class NuPkgUtil
 		}
 		else
 		{
-			final BufferedInputStream is = new BufferedInputStream(inputStream);
-			final BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(file));
-			try
+			try (BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(file)); BufferedInputStream is = new BufferedInputStream(inputStream))
 			{
 				FileUtil.copy(is, os);
-			}
-			finally
-			{
-				os.close();
-				is.close();
 			}
 		}
 	}

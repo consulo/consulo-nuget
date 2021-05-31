@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-package consulo.nuget.module.extension;
-
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
+package consulo.nuget.xml.module.extension;
 
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
@@ -32,19 +28,22 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBTextField;
 
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+
 /**
  * @author VISTALL
  * @since 26.12.14
  */
 public class NuGetConfigPanel extends JPanel
 {
-	public NuGetConfigPanel(final NuGetMutableModuleExtension moduleExtension)
+	public NuGetConfigPanel(final NuGetOldMutableModuleExtension moduleExtension)
 	{
 		super(new VerticalFlowLayout(VerticalFlowLayout.TOP));
 
 		final JBTextField textField = new JBTextField();
 
-		textField.getEmptyText().setText(VfsUtil.urlToPath(moduleExtension.getModule().getModuleDirUrl() + "/" + NuGetModuleExtension.PACKAGES_CONFIG));
+		textField.getEmptyText().setText(VfsUtil.urlToPath(moduleExtension.getModule().getModuleDirUrl() + "/" + NuGetOldModuleExtension.PACKAGES_CONFIG));
 
 		String configFileUrl = moduleExtension.getConfigFileUrl();
 		if(!StringUtil.isEmpty(configFileUrl))

@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package consulo.nuget.dom;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+package consulo.nuget.xml.dom;
 
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
@@ -28,18 +25,22 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.xml.DomFileDescription;
 import consulo.nuget.icon.NuGetIconGroup;
-import consulo.nuget.module.extension.NuGetModuleExtension;
+import consulo.nuget.xml.module.extension.NuGetOldModuleExtension;
+import consulo.nuget.xml.module.extension.NuGetXmlPackagesFile;
 import consulo.ui.image.Image;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author VISTALL
  * @since 24.11.14
  */
-public class NuGetPackagesDomFileDescription extends DomFileDescription<NuGetPackagesFile>
+public class NuGetPackagesDomFileDescription extends DomFileDescription<NuGetXmlPackagesFile>
 {
 	public NuGetPackagesDomFileDescription()
 	{
-		super(NuGetPackagesFile.class, "packages");
+		super(NuGetXmlPackagesFile.class, "packages");
 	}
 
 	@Override
@@ -56,7 +57,7 @@ public class NuGetPackagesDomFileDescription extends DomFileDescription<NuGetPac
 		{
 			return false;
 		}
-		NuGetModuleExtension nuGetModuleExtension = ModuleUtil.getExtension(moduleForPsiElement, NuGetModuleExtension.class);
+		NuGetOldModuleExtension nuGetModuleExtension = ModuleUtil.getExtension(moduleForPsiElement, NuGetOldModuleExtension.class);
 		return nuGetModuleExtension != null && Comparing.equal(nuGetModuleExtension.getConfigFile(), virtualFile);
 	}
 

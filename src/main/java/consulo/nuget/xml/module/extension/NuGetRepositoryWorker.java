@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package consulo.nuget.module.extension;
+package consulo.nuget.xml.module.extension;
 
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Consumer;
 import consulo.annotation.access.RequiredReadAction;
-import consulo.nuget.dom.NuGetPackage;
-import consulo.nuget.dom.NuGetPackagesFile;
+import consulo.nuget.xml.dom.NuGetXmlPackage;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,9 +30,9 @@ import javax.annotation.Nullable;
  */
 public class NuGetRepositoryWorker extends NuGetBasedRepositoryWorker
 {
-	private final NuGetModuleExtension myExtension;
+	private final NuGetOldModuleExtension myExtension;
 
-	public NuGetRepositoryWorker(NuGetModuleExtension extension)
+	public NuGetRepositoryWorker(NuGetOldModuleExtension extension)
 	{
 		super(extension.getModule());
 		myExtension = extension;
@@ -55,13 +54,13 @@ public class NuGetRepositoryWorker extends NuGetBasedRepositoryWorker
 	@Override
 	protected void loadDefinedPackages(@Nonnull Consumer<PackageInfo> packageInfoConsumer)
 	{
-		NuGetPackagesFile packagesFile = myExtension.getPackagesFile();
+		NuGetXmlPackagesFile packagesFile = myExtension.getPackagesFile();
 		if(packagesFile == null)
 		{
 			return;
 		}
 
-		for(NuGetPackage nuGetPackage : packagesFile.getPackages())
+		for(NuGetXmlPackage nuGetPackage : packagesFile.getPackages())
 		{
 			String idValue = nuGetPackage.getId().getValue();
 			String versionValue = nuGetPackage.getVersion().getValue();

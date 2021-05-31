@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package consulo.nuget.module.extension;
+package consulo.nuget.xml.module.extension;
 
-import javax.annotation.Nonnull;
-import javax.swing.JComponent;
-
-import javax.annotation.Nullable;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.StandardFileSystems;
@@ -33,13 +29,17 @@ import consulo.ui.Label;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.layout.VerticalLayout;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+
 /**
  * @author VISTALL
  * @since 24.11.14
  */
-public class NuGetMutableModuleExtension extends NuGetModuleExtension implements MutableModuleExtension<NuGetModuleExtension>, SwingMutableModuleExtension
+public class NuGetOldMutableModuleExtension extends NuGetOldModuleExtension implements MutableModuleExtension<NuGetOldModuleExtension>, SwingMutableModuleExtension
 {
-	public NuGetMutableModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer moduleRootLayer)
+	public NuGetOldMutableModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer moduleRootLayer)
 	{
 		super(id, moduleRootLayer);
 	}
@@ -79,7 +79,7 @@ public class NuGetMutableModuleExtension extends NuGetModuleExtension implements
 	}
 
 	@Override
-	public boolean isModified(@Nonnull NuGetModuleExtension nuGetModuleExtension)
+	public boolean isModified(@Nonnull NuGetOldModuleExtension nuGetModuleExtension)
 	{
 		return myIsEnabled != nuGetModuleExtension.isEnabled() || !Comparing.equal(myConfigFileUrl, nuGetModuleExtension.myConfigFileUrl);
 	}

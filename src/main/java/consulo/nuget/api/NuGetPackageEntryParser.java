@@ -16,17 +16,12 @@
 
 package consulo.nuget.api;
 
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
-
-import javax.annotation.Nonnull;
-
+import com.intellij.openapi.util.text.StringUtil;
 import org.jdom.Element;
 import org.jdom.Namespace;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.util.SmartList;
+
+import javax.annotation.Nonnull;
+import java.util.*;
 
 /**
  * @author VISTALL
@@ -39,10 +34,39 @@ public class NuGetPackageEntryParser
 			"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata");
 	private static final Namespace ourDataServicesNamespace = Namespace.getNamespace("d", "http://schemas.microsoft.com/ado/2007/08/dataservices");
 
+	public static NuGetPackageEntry parseSingle(@Nonnull Element rootElement, @Nonnull String packBaseUrl, @Nonnull String repoUrl)
+	{
+		Namespace namespace = rootElement.getNamespace();
+
+		Element metadata = rootElement.getChild("metadata", namespace);
+
+		String id = metadata.getChildText("id", namespace);
+		String version = metadata.getChildText("version", namespace);
+
+		String downloadUrl = packBaseUrl + id.toLowerCase(Locale.ROOT) + "/" + version.toLowerCase(Locale.ROOT) + "/" + id.toLowerCase(Locale.ROOT) + "." + version.toLowerCase(Locale.ROOT) + "" +
+				".nupkg";
+
+		List<NuGetDependency> dependencyList = new ArrayList<>();
+
+		Element dependencies = metadata.getChild("dependencies", namespace);
+		if(dependencies != null)
+		{
+			for(Element dependency : dependencies.getChildren("dependency", namespace))
+			{
+				String depId = dependency.getAttributeValue("id");
+				NuGetDependencyVersionInfo depVer = NuGetDependencyVersionInfoParser.parse(dependency.getAttributeValue("version"));
+
+				dependencyList.add(new NuGetDependency(depId, depVer, null));
+			}
+		}
+
+		return new NuGetPackageEntry(id, version, "", downloadUrl, dependencyList, List.of(), repoUrl);
+	}
+
 	@Nonnull
 	public static Map<String, NuGetPackageEntry> parse(@Nonnull Element rootElement, @Nonnull String id, @Nonnull String repoUrl)
 	{
-		Map<String, NuGetPackageEntry> map = new TreeMap<String, NuGetPackageEntry>();
+		Map<String, NuGetPackageEntry> map = new TreeMap<>();
 
 		List<Element> rootChildren = rootElement.getChildren("entry", ourAtomNamespace);
 		for(Element element : rootChildren)
@@ -61,7 +85,8 @@ public class NuGetPackageEntryParser
 				contentUrl = content.getAttributeValue("src");
 			}
 
-			List<NuGetDependency> dependencies = new SmartList<NuGetDependency>();
+			List<NuGetDependency> dependencies = new ArrayList<>();
+			List<NuGetFrameworkDependency> frameworkDependencies = new ArrayList<>();
 
 			Element properties = element.getChild("properties", ourDataServicesMetadataNamespace);
 			if(properties != null)
@@ -74,20 +99,30 @@ public class NuGetPackageEntryParser
 
 					for(String dependencyData : split)
 					{
-						StringTokenizer tokenizer = new StringTokenizer(dependencyData, ":");
-						String depId = tokenizer.nextToken();
-						String versionInfo = tokenizer.nextToken();
-						String frameworkName = tokenizer.hasMoreTokens() ? tokenizer.nextToken() : null;
+						if(dependencyData.startsWith("::"))
+						{
+							String frameworkId = dependencyData.substring(2);
 
-						NuGetDependencyVersionInfo dependencyVersionInfo = NuGetDependencyVersionInfoParser.parse(versionInfo);
-						dependencies.add(new NuGetDependency(depId, dependencyVersionInfo, frameworkName));
+							frameworkDependencies.add(new NuGetFrameworkDependency(frameworkId));
+						}
+						else
+						{
+							StringTokenizer tokenizer = new StringTokenizer(dependencyData, ":");
+							String depId = tokenizer.nextToken();
+
+							String versionInfo = tokenizer.nextToken();
+							String frameworkName = tokenizer.hasMoreTokens() ? tokenizer.nextToken() : null;
+
+							NuGetDependencyVersionInfo dependencyVersionInfo = NuGetDependencyVersionInfoParser.parse(versionInfo);
+							dependencies.add(new NuGetDependency(depId, dependencyVersionInfo, frameworkName));
+						}
 					}
 				}
 
 				Element versionElement = properties.getChild("Version", ourDataServicesNamespace);
 				assert versionElement != null;
-				NuGetPackageEntry entry = new NuGetPackageEntry(id, versionElement.getText(), contentType, contentUrl, dependencies, repoUrl);
-				map.put(entry.getVersion(), entry);
+				NuGetPackageEntry entry = new NuGetPackageEntry(id, versionElement.getText(), contentType, contentUrl, dependencies, frameworkDependencies, repoUrl);
+				map.put(entry.version(), entry);
 			}
 		}
 		return map;

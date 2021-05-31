@@ -20,7 +20,7 @@
 								 parentKey="mono-dotnet"
 								 icon="consulo.nuget.NuGetIconGroup@nuget"
 								 name="NuGet"
-								 immutableClass="consulo.nuget.module.extension.NuGetModuleExtension"
-								 mutableClass="consulo.nuget.module.extension.NuGetMutableModuleExtension" />
+								 immutableClass="consulo.nuget.xml.module.extension.NuGetOldModuleExtension"
+								 mutableClass="consulo.nuget.xml.module.extension.NuGetOldMutableModuleExtension" />
 	</extensions>
 </consulo-plugin>

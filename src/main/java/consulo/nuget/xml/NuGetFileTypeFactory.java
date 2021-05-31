@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 must-be.org
+ * Copyright 2013-2014 must-be.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,26 @@
  * limitations under the License.
  */
 
-package consulo.nuget.module.extension;
-
-import java.util.List;
+package consulo.nuget.xml;
 
 import javax.annotation.Nonnull;
 
+import com.intellij.ide.highlighter.XmlFileType;
+import com.intellij.openapi.fileTypes.ExtensionFileNameMatcher;
+import com.intellij.openapi.fileTypes.FileTypeConsumer;
+import com.intellij.openapi.fileTypes.FileTypeFactory;
+
 /**
  * @author VISTALL
- * @since 23.02.2015
+ * @since 24.11.14
  */
-public interface NuGetRepositoryManager
+public class NuGetFileTypeFactory extends FileTypeFactory
 {
-	@Nonnull
-	List<String> getRepositories();
+	@Override
+	public void createFileTypes(@Nonnull FileTypeConsumer consumer)
+	{
+		//FIXME [VISTALL] currenly its a problem - due we need always mark *.config files as XML
+		consumer.consume(XmlFileType.INSTANCE, new ExtensionFileNameMatcher("config"));
+	}
 }
+

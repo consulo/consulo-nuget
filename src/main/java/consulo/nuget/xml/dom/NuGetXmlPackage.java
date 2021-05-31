@@ -14,21 +14,33 @@
  * limitations under the License.
  */
 
-package consulo.nuget.dom;
+package consulo.nuget.xml.dom;
 
-import java.util.List;
+import com.intellij.util.xml.Attribute;
+import com.intellij.util.xml.DomElement;
+import com.intellij.util.xml.GenericAttributeValue;
+import com.intellij.util.xml.Required;
 
 import javax.annotation.Nonnull;
-import com.intellij.util.xml.DefinesXml;
-import com.intellij.util.xml.DomElement;
 
 /**
  * @author VISTALL
  * @since 24.11.14
  */
-@DefinesXml
-public interface NuGetPackagesFile extends DomElement
+public interface NuGetXmlPackage extends DomElement
 {
 	@Nonnull
-	List<NuGetPackage> getPackages();
+	@Attribute
+	@Required
+	GenericAttributeValue<String> getId();
+
+	@Nonnull
+	@Attribute
+	@Required
+	GenericAttributeValue<String> getVersion();
+
+	@Nonnull
+	@Attribute("targetFramework")
+	@Required
+	GenericAttributeValue<String> getTargetFramework();
 }
