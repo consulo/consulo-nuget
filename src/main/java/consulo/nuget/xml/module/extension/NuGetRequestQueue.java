@@ -18,9 +18,9 @@ package consulo.nuget.xml.module.extension;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.io.HttpRequests;
-import gnu.trove.THashMap;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -31,7 +31,7 @@ public class NuGetRequestQueue
 {
 	private static final Logger LOGGER = Logger.getInstance(NuGetRequestQueue.class);
 
-	private Map<String, Object> myCache = new THashMap<String, Object>();
+	private Map<String, Object> myCache = new HashMap<String, Object>();
 
 	@SuppressWarnings("unchecked")
 	public <T> T request(String url, HttpRequests.RequestProcessor<T> requestProcessor)
