@@ -22,7 +22,9 @@
 	<depends>consulo.dotnet</depends>
 	<depends config-file="consulo.dotnet.mono.xml" optional="true">consulo.dotnet.mono</depends>
 	<depends config-file="consulo.dotnet.microsoft.xml" optional="true">consulo.dotnet.microsoft</depends>
-
+	<tags>
+		<tag>build.framework</tag>
+	</tags>
 	<actions>
 		<action id="NuGet.ManageNuGetPackages" icon="consulo.nuget.NuGetIconGroup@nuget" class="consulo.nuget.action.ManageNuGetPackagesAction"/>
 	</actions>
