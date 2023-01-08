@@ -16,17 +16,13 @@
 
 package consulo.nuget.xml.module.extension;
 
-import com.intellij.ide.highlighter.XmlFileType;
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
-import com.intellij.openapi.ui.LabeledComponent;
-import com.intellij.openapi.ui.TextComponentAccessor;
-import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.openapi.ui.VerticalFlowLayout;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.ui.DocumentAdapter;
-import com.intellij.ui.components.JBTextField;
+import consulo.fileChooser.FileChooserDescriptorFactory;
+import consulo.ui.ex.awt.*;
+import consulo.ui.ex.awt.event.DocumentAdapter;
+import consulo.util.io.FileUtil;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
+import consulo.xml.ide.highlighter.XmlFileType;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -43,12 +39,12 @@ public class NuGetConfigPanel extends JPanel
 
 		final JBTextField textField = new JBTextField();
 
-		textField.getEmptyText().setText(VfsUtil.urlToPath(moduleExtension.getModule().getModuleDirUrl() + "/" + NuGetOldModuleExtension.PACKAGES_CONFIG));
+		textField.getEmptyText().setText(VirtualFileUtil.urlToPath(moduleExtension.getModule().getModuleDirUrl() + "/" + NuGetOldModuleExtension.PACKAGES_CONFIG));
 
 		String configFileUrl = moduleExtension.getConfigFileUrl();
 		if(!StringUtil.isEmpty(configFileUrl))
 		{
-			textField.setText(FileUtil.toSystemDependentName(VfsUtil.urlToPath(configFileUrl)));
+			textField.setText(FileUtil.toSystemDependentName(VirtualFileUtil.urlToPath(configFileUrl)));
 		}
 
 		TextFieldWithBrowseButton browseButton = new TextFieldWithBrowseButton(textField);

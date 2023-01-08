@@ -16,9 +16,8 @@
 
 package consulo.nuget.util;
 
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.util.io.URLUtil;
-import com.intellij.util.io.ZipUtil;
+import consulo.util.io.FileUtil;
+import consulo.util.io.URLUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

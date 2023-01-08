@@ -16,9 +16,9 @@
 
 package consulo.nuget.xml.module.extension;
 
-import com.intellij.util.xml.DefinesXml;
-import com.intellij.util.xml.DomElement;
 import consulo.nuget.xml.dom.NuGetXmlPackage;
+import consulo.xml.util.xml.DefinesXml;
+import consulo.xml.util.xml.DomElement;
 
 import javax.annotation.Nonnull;
 import java.util.List;

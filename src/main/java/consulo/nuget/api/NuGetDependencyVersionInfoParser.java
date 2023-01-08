@@ -16,11 +16,11 @@
 
 package consulo.nuget.api;
 
-import java.util.List;
+import consulo.dotnet.util.ArrayUtil2;
+import consulo.util.lang.StringUtil;
 
 import javax.annotation.Nonnull;
-import com.intellij.openapi.util.text.StringUtil;
-import consulo.dotnet.util.ArrayUtil2;
+import java.util.List;
 
 /**
  * @author VISTALL

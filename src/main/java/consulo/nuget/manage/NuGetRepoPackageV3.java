@@ -1,7 +1,7 @@
 package consulo.nuget.manage;
 
-import com.intellij.webcore.packaging.RepoPackage;
 import consulo.nuget.api.v3.SearchQueryService;
+import consulo.repository.ui.RepoPackage;
 
 import javax.annotation.Nonnull;
 

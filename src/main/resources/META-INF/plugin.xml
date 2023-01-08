@@ -20,22 +20,9 @@
 	<version>SNAPSHOT</version>
 	<depends>com.intellij.xml</depends>
 	<depends>consulo.dotnet</depends>
-	<depends config-file="consulo.dotnet.mono.xml" optional="true">consulo.dotnet.mono</depends>
-	<depends config-file="consulo.dotnet.microsoft.xml" optional="true">consulo.dotnet.microsoft</depends>
+	<depends optional="true">consulo.dotnet.mono</depends>
+	<depends optional="true">consulo.dotnet.microsoft</depends>
 	<tags>
 		<tag>build.framework</tag>
 	</tags>
-	<actions>
-		<action id="NuGet.ManageNuGetPackages" icon="consulo.nuget.NuGetIconGroup@nuget" class="consulo.nuget.action.ManageNuGetPackagesAction"/>
-	</actions>
-
-	<extensions defaultExtensionNs="com.intellij.xml">
-		<dom.fileDescription implementation="consulo.nuget.xml.dom.NuGetPackagesDomFileDescription"/>
-	</extensions>
-
-	<extensions defaultExtensionNs="com.intellij">
-		<fileTypeFactory implementation="consulo.nuget.xml.NuGetFileTypeFactory"/>
-
-		<editorNotificationProvider implementation="consulo.nuget.xml.NuGetFileHeader"/>
-	</extensions>
 </consulo-plugin>

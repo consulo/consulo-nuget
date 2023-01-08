@@ -1,43 +1,43 @@
 package consulo.nuget.xml.module.extension;
 
 import com.google.gson.Gson;
-import com.intellij.ide.highlighter.XmlFileType;
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationType;
-import com.intellij.notification.Notifications;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.WriteAction;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.roots.ModifiableRootModel;
-import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.roots.OrderEntry;
-import com.intellij.openapi.roots.impl.ModuleLibraryOrderEntryImpl;
-import com.intellij.openapi.roots.libraries.Library;
-import com.intellij.openapi.roots.libraries.LibraryTable;
-import com.intellij.openapi.util.Computable;
-import com.intellij.openapi.util.JDOMUtil;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.newvfs.RefreshQueue;
-import com.intellij.ui.EditorNotifications;
-import com.intellij.util.ArrayUtil;
-import com.intellij.util.Consumer;
-import com.intellij.util.io.DownloadUtil;
 import consulo.annotation.access.RequiredReadAction;
+import consulo.application.ApplicationManager;
+import consulo.application.WriteAction;
+import consulo.application.progress.ProgressIndicator;
+import consulo.application.progress.Task;
+import consulo.application.util.function.Computable;
+import consulo.content.base.BinariesOrderRootType;
+import consulo.content.base.DocumentationOrderRootType;
+import consulo.content.library.Library;
+import consulo.content.library.LibraryTable;
 import consulo.dotnet.dll.DotNetModuleFileType;
+import consulo.fileEditor.EditorNotifications;
+import consulo.ide.util.DownloadUtil;
 import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
+import consulo.module.Module;
+import consulo.module.content.ModuleRootManager;
+import consulo.module.content.layer.ModifiableRootModel;
+import consulo.module.content.layer.orderEntry.LibraryOrderEntry;
+import consulo.module.content.layer.orderEntry.OrderEntry;
+import consulo.nuget.NuGetNotificationGroup;
 import consulo.nuget.api.*;
 import consulo.nuget.api.v3.Index;
 import consulo.nuget.api.v3.PackageBaseAddressIndex;
 import consulo.nuget.util.NuPkgUtil;
-import consulo.roots.types.BinariesOrderRootType;
-import consulo.roots.types.DocumentationOrderRootType;
+import consulo.project.ui.notification.Notification;
+import consulo.project.ui.notification.NotificationType;
+import consulo.project.ui.notification.Notifications;
 import consulo.ui.annotation.RequiredUIAccess;
-import consulo.vfs.util.ArchiveVfsUtil;
+import consulo.util.collection.ArrayUtil;
+import consulo.util.io.FileUtil;
+import consulo.util.jdom.JDOMUtil;
+import consulo.virtualFileSystem.LocalFileSystem;
+import consulo.virtualFileSystem.RefreshQueue;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.archive.ArchiveVfsUtil;
+import consulo.xml.ide.highlighter.XmlFileType;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 
@@ -48,6 +48,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /**
  * @author VISTALL
@@ -235,8 +236,7 @@ public abstract class NuGetBasedRepositoryWorker
 						String downloadUrl = packageEntry == null ? null : packageEntry.contentUrl();
 						if(downloadUrl == null)
 						{
-							Notifications.Bus.notify(new Notification("NuGet", "Warning", "Package is not resolved with id: " + value.getId() +
-									" and version: " + value.getVersion(), NotificationType.WARNING));
+							Notifications.Bus.notify(new Notification(NuGetNotificationGroup.GROUP, "Warning", "Package is not resolved with id: " + value.getId() + " and version: " + value.getVersion(), NotificationType.WARNING));
 							continue;
 						}
 
@@ -266,9 +266,7 @@ public abstract class NuGetBasedRepositoryWorker
 							{
 								FileUtil.delete(downloadTarget);
 
-								Notifications.Bus.notify(new Notification("NuGet", "Warning", "Fail to download dependency with id: " + value.getId() +
-										" " +
-										"and version: " + value.getVersion(), NotificationType.WARNING));
+								Notifications.Bus.notify(new Notification(NuGetNotificationGroup.GROUP, "Warning", "Fail to download dependency with id: " + value.getId() + " " + "and version: " + value.getVersion(), NotificationType.WARNING));
 							}
 						}
 
@@ -308,11 +306,7 @@ public abstract class NuGetBasedRepositoryWorker
 		}.queue();
 	}
 
-	public void resolveDependencies(@Nonnull ProgressIndicator indicator,
-									@Nonnull NuGetRequestQueue requestQueue,
-									@Nonnull NuGetRepositoryManager manager,
-									@Nonnull Consumer<PackageInfo> packageInfoConsumer,
-									@Nonnull Map<String, PackageInfo> map)
+	public void resolveDependencies(@Nonnull ProgressIndicator indicator, @Nonnull NuGetRequestQueue requestQueue, @Nonnull NuGetRepositoryManager manager, @Nonnull Consumer<PackageInfo> packageInfoConsumer, @Nonnull Map<String, PackageInfo> map)
 	{
 		PackageInfo[] packageInfos = map.values().toArray(new PackageInfo[map.size()]);
 
@@ -322,12 +316,7 @@ public abstract class NuGetBasedRepositoryWorker
 		}
 	}
 
-	private void resolveDependenciesImpl(@Nonnull ProgressIndicator indicator,
-										 @Nonnull NuGetRequestQueue requestQueue,
-										 @Nonnull NuGetRepositoryManager manager,
-										 @Nonnull Consumer<PackageInfo> packageInfoConsumer,
-										 @Nonnull Map<String, PackageInfo> map,
-										 @Nonnull PackageInfo packageInfo)
+	private void resolveDependenciesImpl(@Nonnull ProgressIndicator indicator, @Nonnull NuGetRequestQueue requestQueue, @Nonnull NuGetRepositoryManager manager, @Nonnull Consumer<PackageInfo> packageInfoConsumer, @Nonnull Map<String, PackageInfo> map, @Nonnull PackageInfo packageInfo)
 	{
 		NuGetPackageEntry packageEntry = packageInfo.getPackageEntry();
 		if(packageEntry == null)
@@ -373,7 +362,7 @@ public abstract class NuGetBasedRepositoryWorker
 			}
 			PackageInfo newPackageInfo = new PackageInfo(dependency.getId(), correctVersion, frameworks);
 			newPackageInfo.setPackageEntry(resolvePackageEntry(manager, indicator, requestQueue, dependency.getId(), correctVersion));
-			packageInfoConsumer.consume(newPackageInfo);
+			packageInfoConsumer.accept(newPackageInfo);
 
 			resolveDependenciesImpl(indicator, requestQueue, manager, packageInfoConsumer, map, newPackageInfo);
 		}
@@ -392,11 +381,7 @@ public abstract class NuGetBasedRepositoryWorker
 	}
 
 	@Nullable
-	protected NuGetPackageEntry resolvePackageEntry(@Nonnull final NuGetRepositoryManager repositoryManager,
-													@Nonnull final ProgressIndicator indicator,
-													@Nonnull final NuGetRequestQueue requestQueue,
-													@Nonnull final String id,
-													@Nonnull final String version)
+	protected NuGetPackageEntry resolvePackageEntry(@Nonnull final NuGetRepositoryManager repositoryManager, @Nonnull final ProgressIndicator indicator, @Nonnull final NuGetRequestQueue requestQueue, @Nonnull final String id, @Nonnull final String version)
 	{
 		for(final String url : repositoryManager.getRepositories())
 		{
@@ -411,7 +396,7 @@ public abstract class NuGetBasedRepositoryWorker
 					String packBaseUrl = index.getURL(Index.PackageBaseAddress);
 
 					String resultUrl = packBaseUrl + id.toLowerCase(Locale.ROOT) + "/" + version.toLowerCase(Locale.ROOT) + "/" + id.toLowerCase(Locale.ROOT) + ".nuspec";
-					
+
 					return requestQueue.request(resultUrl, request -> {
 						try
 						{
@@ -439,10 +424,7 @@ public abstract class NuGetBasedRepositoryWorker
 	}
 
 	@Nullable
-	private Collection<String> getVersionsForId(@Nonnull final NuGetRepositoryManager repositoryManager,
-												@Nonnull final ProgressIndicator indicator,
-												@Nonnull NuGetRequestQueue requestQueue,
-												@Nonnull String id)
+	private Collection<String> getVersionsForId(@Nonnull final NuGetRepositoryManager repositoryManager, @Nonnull final ProgressIndicator indicator, @Nonnull NuGetRequestQueue requestQueue, @Nonnull String id)
 	{
 		for(final String url : repositoryManager.getRepositories())
 		{
@@ -563,24 +545,23 @@ public abstract class NuGetBasedRepositoryWorker
 	{
 		indicator.setText("NuGet: removing old dependencies from module");
 
-		final ModifiableRootModel modifiableModel = ApplicationManager.getApplication().runReadAction(new Computable<ModifiableRootModel>()
-		{
-			@Override
-			public ModifiableRootModel compute()
-			{
-				return ModuleRootManager.getInstance(myModule).getModifiableModel();
-			}
-		});
+		final ModifiableRootModel modifiableModel = ApplicationManager.getApplication().runReadAction((Computable<ModifiableRootModel>) () -> ModuleRootManager.getInstance(myModule).getModifiableModel());
 
 		OrderEntry[] orderEntries = modifiableModel.getOrderEntries();
 		for(OrderEntry orderEntry : orderEntries)
 		{
-			if(!(orderEntry instanceof ModuleLibraryOrderEntryImpl))
+			if(!(orderEntry instanceof LibraryOrderEntry))
 			{
 				continue;
 			}
 
-			String libraryName = ((ModuleLibraryOrderEntryImpl) orderEntry).getLibraryName();
+			LibraryOrderEntry libraryOrderEntry = (LibraryOrderEntry) orderEntry;
+			if(!libraryOrderEntry.isModuleLevel())
+			{
+				continue;
+			}
+
+			String libraryName = libraryOrderEntry.getLibraryName();
 			if(libraryName != null)
 			{
 				int i = libraryName.indexOf(NUGET_LIBRARY_PREFIX);
@@ -612,8 +593,7 @@ public abstract class NuGetBasedRepositoryWorker
 			return;
 		}
 
-		WriteAction.runAndWait(() ->
-		{
+		WriteAction.runAndWait(() -> {
 			VirtualFile packagesDir = LocalFileSystem.getInstance().findFileByPath(getPackagesDirPath());
 			if(packagesDir == null)
 			{

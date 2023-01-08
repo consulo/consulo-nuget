@@ -16,7 +16,7 @@
 
 package consulo.nuget.api;
 
-import com.intellij.openapi.util.text.StringUtil;
+import consulo.util.lang.StringUtil;
 import org.jdom.Element;
 import org.jdom.Namespace;
 

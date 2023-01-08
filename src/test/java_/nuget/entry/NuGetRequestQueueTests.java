@@ -16,7 +16,7 @@
 
 package nuget.entry;
 
-import com.intellij.util.io.HttpRequests;
+import consulo.http.HttpRequests;
 import consulo.nuget.xml.module.extension.NuGetRequestQueue;
 import org.junit.Assert;
 import org.junit.Test;

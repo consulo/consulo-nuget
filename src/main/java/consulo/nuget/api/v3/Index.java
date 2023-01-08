@@ -2,8 +2,8 @@ package consulo.nuget.api.v3;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.util.io.HttpRequests;
+import consulo.application.progress.ProgressIndicator;
+import consulo.http.HttpRequests;
 
 import java.io.IOException;
 import java.util.Arrays;

@@ -16,10 +16,10 @@
 
 package consulo.nuget.xml.dom;
 
-import com.intellij.util.xml.Attribute;
-import com.intellij.util.xml.DomElement;
-import com.intellij.util.xml.GenericAttributeValue;
-import com.intellij.util.xml.Required;
+import consulo.xml.util.xml.Attribute;
+import consulo.xml.util.xml.DomElement;
+import consulo.xml.util.xml.GenericAttributeValue;
+import consulo.xml.util.xml.Required;
 
 import javax.annotation.Nonnull;
 

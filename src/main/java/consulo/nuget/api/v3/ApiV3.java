@@ -1,10 +1,10 @@
 package consulo.nuget.api.v3;
 
 import com.google.gson.Gson;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.util.io.HttpRequests;
-import com.intellij.webcore.packaging.RepoPackage;
+import consulo.application.progress.ProgressIndicator;
+import consulo.http.HttpRequests;
 import consulo.nuget.manage.NuGetRepoPackageV3;
+import consulo.repository.ui.RepoPackage;
 
 import java.io.IOException;
 import java.net.URLEncoder;

@@ -16,10 +16,10 @@
 
 package consulo.nuget.api;
 
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.util.ObjectUtil;
 import consulo.dotnet.util.ArrayUtil2;
 import consulo.logging.Logger;
+import consulo.util.lang.ObjectUtil;
+import consulo.util.lang.StringUtil;
 
 import javax.annotation.Nonnull;
 import java.util.List;

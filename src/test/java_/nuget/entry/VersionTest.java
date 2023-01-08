@@ -27,7 +27,7 @@ import consulo.nuget.api.NuGetVersion;
  * @author VISTALL
  * @since 23.02.2015
  */
-public class VersionTest extends Assert
+public abstract class VersionTest extends Assert
 {
 	@Test
 	public void testDependency()

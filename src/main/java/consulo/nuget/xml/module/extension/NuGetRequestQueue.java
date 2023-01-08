@@ -16,8 +16,8 @@
 
 package consulo.nuget.xml.module.extension;
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.util.io.HttpRequests;
+import consulo.http.HttpRequests;
+import consulo.logging.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;

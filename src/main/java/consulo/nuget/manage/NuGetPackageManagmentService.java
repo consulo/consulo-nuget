@@ -1,16 +1,15 @@
 package consulo.nuget.manage;
 
-import com.intellij.execution.ExecutionException;
-import com.intellij.openapi.application.ReadAction;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.util.CatchingConsumer;
-import com.intellij.webcore.packaging.InstalledPackage;
-import com.intellij.webcore.packaging.PackageManagementServiceEx;
-import com.intellij.webcore.packaging.RepoPackage;
+import consulo.application.ReadAction;
+import consulo.application.progress.ProgressManager;
 import consulo.nuget.api.v3.ApiV3;
 import consulo.nuget.module.extension.NuGetModuleExtension;
 import consulo.nuget.module.extension.NuGetPackageInfo;
-import consulo.packagesView.SearchablePackageManagementService;
+import consulo.repository.ui.InstalledPackage;
+import consulo.repository.ui.PackageManagementServiceEx;
+import consulo.repository.ui.RepoPackage;
+import consulo.repository.ui.SearchablePackageManagementService;
+import consulo.util.concurrent.AsyncResult;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -39,12 +38,6 @@ public class NuGetPackageManagmentService extends PackageManagementServiceEx imp
 
 	}
 
-	@Override
-	public void fetchLatestVersion(@Nonnull InstalledPackage installedPackage, @Nonnull CatchingConsumer<String, Exception> catchingConsumer)
-	{
-
-	}
-
 	@Nonnull
 	@Override
 	public List<RepoPackage> getAllPackages() throws IOException
@@ -61,7 +54,7 @@ public class NuGetPackageManagmentService extends PackageManagementServiceEx imp
 
 	@Nonnull
 	@Override
-	public List<? extends InstalledPackage> getInstalledPackagesList() throws ExecutionException
+	public List<? extends InstalledPackage> getInstalledPackagesList() throws IOException
 	{
 		List<NuGetPackageInfo> installedPackages = ReadAction.compute(() -> myExtension.getInstalledPackages());
 
@@ -94,45 +87,50 @@ public class NuGetPackageManagmentService extends PackageManagementServiceEx imp
 	}
 
 	@Override
-	public void fetchPackageVersions(String id, CatchingConsumer<List<String>, Exception> catchingConsumer)
+	public AsyncResult<List<String>> fetchPackageVersions(String id)
 	{
+		AsyncResult<List<String>> result = AsyncResult.undefined();
 		try
 		{
 			NuGetRepoPackageV3 packageV3 = myLastPackages.get(id);
 			if(packageV3 == null)
 			{
-				catchingConsumer.accept(List.of());
+				result.setDone(List.of());
 			}
 			else
 			{
-				catchingConsumer.accept(Arrays.stream(packageV3.getVersions()).map(it -> it.version).collect(Collectors.toList()));
+				result.setDone(Arrays.stream(packageV3.getVersions()).map(it -> it.version).collect(Collectors.toList()));
 			}
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			result.rejectWithThrowable(e);
 		}
+		return result;
 	}
 
 	@Override
-	public void fetchPackageDetails(String id, CatchingConsumer<String, Exception> catchingConsumer)
+	public AsyncResult<String> fetchPackageDetails(String id)
 	{
+		AsyncResult<String> result = AsyncResult.undefined();
 		try
 		{
 			NuGetRepoPackageV3 packageV3 = myLastPackages.get(id);
 			if(packageV3 == null)
 			{
-				catchingConsumer.accept("");
+				result.setDone("");
 			}
 			else
 			{
-				catchingConsumer.accept(packageV3.getDescription());
+				result.setDone(packageV3.getDescription());
 			}
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			result.rejectWithThrowable(e);
 		}
+
+		return result;
 	}
 
 	@Nonnull

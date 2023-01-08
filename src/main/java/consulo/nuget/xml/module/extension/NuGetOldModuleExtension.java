@@ -16,22 +16,22 @@
 
 package consulo.nuget.xml.module.extension;
 
-import com.intellij.openapi.command.WriteCommandAction;
-import com.intellij.openapi.util.NotNullLazyValue;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.xml.XmlFile;
-import com.intellij.util.xml.DomFileElement;
-import com.intellij.util.xml.DomManager;
 import consulo.annotation.access.RequiredReadAction;
-import consulo.module.extension.impl.ModuleExtensionImpl;
+import consulo.application.util.NotNullLazyValue;
+import consulo.language.editor.WriteCommandAction;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiManager;
+import consulo.module.content.layer.ModuleRootLayer;
+import consulo.module.content.layer.extension.ModuleExtensionBase;
 import consulo.nuget.module.extension.NuGetModuleExtension;
 import consulo.nuget.module.extension.NuGetPackageInfo;
 import consulo.nuget.xml.dom.NuGetXmlPackage;
-import consulo.roots.ModuleRootLayer;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.VirtualFileManager;
+import consulo.xml.psi.xml.XmlFile;
+import consulo.xml.util.xml.DomFileElement;
+import consulo.xml.util.xml.DomManager;
 import org.jdom.Element;
 
 import javax.annotation.Nonnull;
@@ -43,7 +43,7 @@ import java.util.List;
  * @author VISTALL
  * @since 24.11.14
  */
-public class NuGetOldModuleExtension extends ModuleExtensionImpl<NuGetOldModuleExtension> implements NuGetModuleExtension<NuGetOldModuleExtension>
+public class NuGetOldModuleExtension extends ModuleExtensionBase<NuGetOldModuleExtension> implements NuGetModuleExtension<NuGetOldModuleExtension>
 {
 	public static final String PACKAGES_CONFIG = "packages.config";
 

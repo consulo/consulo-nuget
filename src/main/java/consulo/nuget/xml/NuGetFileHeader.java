@@ -16,47 +16,62 @@
 
 package consulo.nuget.xml;
 
-import com.intellij.ide.highlighter.XmlFileType;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.fileEditor.FileEditor;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtil;
-import com.intellij.openapi.module.ModuleUtilCore;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ModifiableRootModel;
-import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.util.Comparing;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.EditorNotificationPanel;
-import com.intellij.ui.EditorNotifications;
 import consulo.annotation.access.RequiredReadAction;
-import consulo.editor.notifications.EditorNotificationProvider;
-import consulo.nuget.xml.module.extension.NuGetXmlPackagesFile;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.application.ApplicationManager;
+import consulo.fileEditor.EditorNotificationBuilder;
+import consulo.fileEditor.EditorNotificationProvider;
+import consulo.fileEditor.EditorNotifications;
+import consulo.fileEditor.FileEditor;
+import consulo.language.util.ModuleUtilCore;
+import consulo.localize.LocalizeValue;
+import consulo.module.Module;
+import consulo.module.content.ModuleRootManager;
+import consulo.module.content.layer.ModifiableRootModel;
 import consulo.nuget.xml.module.extension.NuGetOldModuleExtension;
 import consulo.nuget.xml.module.extension.NuGetOldMutableModuleExtension;
 import consulo.nuget.xml.module.extension.NuGetRepositoryWorker;
+import consulo.nuget.xml.module.extension.NuGetXmlPackagesFile;
+import consulo.project.Project;
+import consulo.ui.Component;
 import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.event.UIEvent;
+import consulo.util.lang.Comparing;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.xml.ide.highlighter.XmlFileType;
+import jakarta.inject.Inject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * @author VISTALL
  * @since 24.11.14
  */
-public class NuGetFileHeader implements EditorNotificationProvider<EditorNotificationPanel>
+@ExtensionImpl
+public class NuGetFileHeader implements EditorNotificationProvider
 {
 	private final Project myProject;
 
+	@Inject
 	public NuGetFileHeader(Project project)
 	{
 		myProject = project;
 	}
 
+	@Nonnull
+	@Override
+	public String getId()
+	{
+		return "nuget-config-file";
+	}
+
 	@RequiredReadAction
 	@Nullable
 	@Override
-	public EditorNotificationPanel createNotificationPanel(@Nonnull final VirtualFile file, @Nonnull FileEditor fileEditor)
+	public EditorNotificationBuilder buildNotification(@Nonnull VirtualFile file, @Nonnull FileEditor fileEditor, @Nonnull Supplier<EditorNotificationBuilder> supplier)
 	{
 		if(file.getFileType() != XmlFileType.INSTANCE)
 		{
@@ -69,7 +84,7 @@ public class NuGetFileHeader implements EditorNotificationProvider<EditorNotific
 			return null;
 		}
 
-		NuGetOldModuleExtension extension = ModuleUtil.getExtension(moduleForPsiElement, NuGetOldModuleExtension.class);
+		NuGetOldModuleExtension extension = ModuleUtilCore.getExtension(moduleForPsiElement, NuGetOldModuleExtension.class);
 		if(extension == null)
 		{
 			return null;
@@ -86,20 +101,20 @@ public class NuGetFileHeader implements EditorNotificationProvider<EditorNotific
 			return null;
 		}
 
-		EditorNotificationPanel editorNotificationPanel = new EditorNotificationPanel();
-		editorNotificationPanel.setText("NuGet");
+		EditorNotificationBuilder builder = supplier.get();
+		builder.withText(LocalizeValue.localizeTODO("NuGet"));
 
 		final NuGetRepositoryWorker worker = extension.getWorker();
 
 		if(!worker.isUpdateInProgress())
 		{
-			editorNotificationPanel.createActionLabel("Update Packages", () -> worker.forceUpdate());
-			editorNotificationPanel.createActionLabel("Manage Packages", "NuGet.ManageNuGetPackages");
-			editorNotificationPanel.createActionLabel("Remove NuGet Support", new Runnable()
+			builder.withAction(LocalizeValue.localizeTODO("Update Packages"), (e) -> worker.forceUpdate());
+			builder.withAction(LocalizeValue.localizeTODO("Manage Packages"), "NuGet.ManageNuGetPackages");
+			builder.withAction(LocalizeValue.localizeTODO("Remove NuGet Support"), new Consumer<UIEvent<Component>>()
 			{
 				@Override
 				@RequiredUIAccess
-				public void run()
+				public void accept(UIEvent<Component> uiEvent)
 				{
 					final ModifiableRootModel modifiableModel = ModuleRootManager.getInstance(moduleForPsiElement).getModifiableModel();
 
@@ -120,7 +135,7 @@ public class NuGetFileHeader implements EditorNotificationProvider<EditorNotific
 					});
 				}
 			});
-			return editorNotificationPanel;
+			return builder;
 		}
 		return null;
 	}

@@ -1,21 +1,26 @@
 package consulo.nuget.action;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtilCore;
-import com.intellij.openapi.project.DumbAwareAction;
-import com.intellij.webcore.packaging.ManagePackagesDialog;
+import consulo.annotation.component.ActionImpl;
+import consulo.language.editor.CommonDataKeys;
+import consulo.language.util.ModuleUtilCore;
+import consulo.module.Module;
+import consulo.nuget.icon.NuGetIconGroup;
 import consulo.nuget.manage.NuGetPackageManagmentService;
 import consulo.nuget.module.extension.NuGetModuleExtension;
+import consulo.repository.ui.RepositoryDialogFactory;
 import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.DumbAwareAction;
+import consulo.ui.image.Image;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author VISTALL
  * @since 30/05/2021
  */
+@ActionImpl(id = "NuGet.ManageNuGetPackages")
 public class ManageNuGetPackagesAction extends DumbAwareAction
 {
 	@RequiredUIAccess
@@ -34,7 +39,16 @@ public class ManageNuGetPackagesAction extends DumbAwareAction
 			return;
 		}
 
-		new ManagePackagesDialog(module.getProject(), new NuGetPackageManagmentService(extension), null).showAsync();
+		RepositoryDialogFactory repositoryDialogFactory = module.getProject().getInstance(RepositoryDialogFactory.class);
+
+		repositoryDialogFactory.showManagePackagesDialogAsync(new NuGetPackageManagmentService(extension), null);
+	}
+
+	@Nullable
+	@Override
+	protected Image getTemplateIcon()
+	{
+		return NuGetIconGroup.nuget();
 	}
 
 	@RequiredUIAccess
