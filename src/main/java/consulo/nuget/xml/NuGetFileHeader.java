@@ -33,9 +33,6 @@ import consulo.nuget.xml.module.extension.NuGetOldMutableModuleExtension;
 import consulo.nuget.xml.module.extension.NuGetRepositoryWorker;
 import consulo.nuget.xml.module.extension.NuGetXmlPackagesFile;
 import consulo.project.Project;
-import consulo.ui.Component;
-import consulo.ui.annotation.RequiredUIAccess;
-import consulo.ui.event.UIEvent;
 import consulo.util.lang.Comparing;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.xml.ide.highlighter.XmlFileType;
@@ -43,7 +40,6 @@ import jakarta.inject.Inject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -51,92 +47,72 @@ import java.util.function.Supplier;
  * @since 24.11.14
  */
 @ExtensionImpl
-public class NuGetFileHeader implements EditorNotificationProvider
-{
-	private final Project myProject;
+public class NuGetFileHeader implements EditorNotificationProvider {
+    private final Project myProject;
 
-	@Inject
-	public NuGetFileHeader(Project project)
-	{
-		myProject = project;
-	}
+    @Inject
+    public NuGetFileHeader(Project project) {
+        myProject = project;
+    }
 
-	@Nonnull
-	@Override
-	public String getId()
-	{
-		return "nuget-config-file";
-	}
+    @Nonnull
+    @Override
+    public String getId() {
+        return "nuget-config-file";
+    }
 
-	@RequiredReadAction
-	@Nullable
-	@Override
-	public EditorNotificationBuilder buildNotification(@Nonnull VirtualFile file, @Nonnull FileEditor fileEditor, @Nonnull Supplier<EditorNotificationBuilder> supplier)
-	{
-		if(file.getFileType() != XmlFileType.INSTANCE)
-		{
-			return null;
-		}
+    @RequiredReadAction
+    @Nullable
+    @Override
+    public EditorNotificationBuilder buildNotification(@Nonnull VirtualFile file, @Nonnull FileEditor fileEditor, @Nonnull Supplier<EditorNotificationBuilder> supplier) {
+        if (file.getFileType() != XmlFileType.INSTANCE) {
+            return null;
+        }
 
-		final Module moduleForPsiElement = ModuleUtilCore.findModuleForFile(file, myProject);
-		if(moduleForPsiElement == null)
-		{
-			return null;
-		}
+        final Module moduleForPsiElement = ModuleUtilCore.findModuleForFile(file, myProject);
+        if (moduleForPsiElement == null) {
+            return null;
+        }
 
-		NuGetOldModuleExtension extension = ModuleUtilCore.getExtension(moduleForPsiElement, NuGetOldModuleExtension.class);
-		if(extension == null)
-		{
-			return null;
-		}
+        NuGetOldModuleExtension extension = ModuleUtilCore.getExtension(moduleForPsiElement, NuGetOldModuleExtension.class);
+        if (extension == null) {
+            return null;
+        }
 
-		if(!Comparing.equal(file, extension.getConfigFile()))
-		{
-			return null;
-		}
+        if (!Comparing.equal(file, extension.getConfigFile())) {
+            return null;
+        }
 
-		NuGetXmlPackagesFile packagesFile = extension.getPackagesFile();
-		if(packagesFile == null)
-		{
-			return null;
-		}
+        NuGetXmlPackagesFile packagesFile = extension.getPackagesFile();
+        if (packagesFile == null) {
+            return null;
+        }
 
-		EditorNotificationBuilder builder = supplier.get();
-		builder.withText(LocalizeValue.localizeTODO("NuGet"));
+        EditorNotificationBuilder builder = supplier.get();
+        builder.withText(LocalizeValue.localizeTODO("NuGet"));
 
-		final NuGetRepositoryWorker worker = extension.getWorker();
+        final NuGetRepositoryWorker worker = extension.getWorker();
 
-		if(!worker.isUpdateInProgress())
-		{
-			builder.withAction(LocalizeValue.localizeTODO("Update Packages"), (e) -> worker.forceUpdate());
-			builder.withAction(LocalizeValue.localizeTODO("Manage Packages"), "NuGet.ManageNuGetPackages");
-			builder.withAction(LocalizeValue.localizeTODO("Remove NuGet Support"), new Consumer<UIEvent<Component>>()
-			{
-				@Override
-				@RequiredUIAccess
-				public void accept(UIEvent<Component> uiEvent)
-				{
-					final ModifiableRootModel modifiableModel = ModuleRootManager.getInstance(moduleForPsiElement).getModifiableModel();
+        if (!worker.isUpdateInProgress()) {
+            builder.withAction(LocalizeValue.localizeTODO("Update Packages"), (e) -> worker.forceUpdate());
+            builder.withAction(LocalizeValue.localizeTODO("Manage Packages"), "NuGet.ManageNuGetPackages");
+            builder.withAction(LocalizeValue.localizeTODO("Remove NuGet Support"), e -> {
 
-					worker.cancelTasks();
+                final ModifiableRootModel modifiableModel = ModuleRootManager.getInstance(moduleForPsiElement).getModifiableModel();
 
-					NuGetOldMutableModuleExtension mutableModuleExtension = modifiableModel.getExtension(NuGetOldMutableModuleExtension.class);
-					assert mutableModuleExtension != null;
-					mutableModuleExtension.setEnabled(false);
+                worker.cancelTasks();
 
-					ApplicationManager.getApplication().runWriteAction(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							modifiableModel.commit();
-							EditorNotifications.updateAll();
-						}
-					});
-				}
-			});
-			return builder;
-		}
-		return null;
-	}
+                NuGetOldMutableModuleExtension mutableModuleExtension = modifiableModel.getExtension(NuGetOldMutableModuleExtension.class);
+                assert mutableModuleExtension != null;
+                mutableModuleExtension.setEnabled(false);
+
+                ApplicationManager.getApplication().runWriteAction(() -> {
+                    modifiableModel.commit();
+                    EditorNotifications.updateAll();
+                });
+            });
+            return builder;
+        }
+        return null;
+    }
 }
