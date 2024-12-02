@@ -1,17 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<svg version="1.0" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
-<g id="Symbols">
-	<g id="nuget">
-		<g id="Global_x2F_Logo" transform="translate(0.000000, 6.000000)">
-			<path id="Fill-12" fill-rule="evenodd" clip-rule="evenodd" fill="#004880" d="M11.6,8c-1.4,0-2.5-1.1-2.5-2.5S10.2,3,11.6,3
-				s2.5,1.1,2.5,2.5C14.1,6.8,13,8,11.6,8 M6.5,2.2C5.7,2.2,5,1.5,5,0.6S5.7-1,6.5-1s1.6,0.7,1.6,1.6S7.4,2.2,6.5,2.2 M11.7-2.7H7.5
-				C5.3-2.7,3.6-1,3.6,1.2v4.2c0,2.1,1.7,3.9,3.9,3.9h4.2c2.1,0,3.9-1.7,3.9-3.9V1.2C15.6-1,13.8-2.7,11.7-2.7"/>
-			<g id="Clip-15">
-			</g>
-			<path id="Fill-14" fill-rule="evenodd" clip-rule="evenodd" fill="#004880" d="M2.9-4.2c0,0.7-0.6,1.3-1.3,1.3
-				C1-2.9,0.4-3.5,0.4-4.2S1-5.5,1.7-5.5S2.9-4.9,2.9-4.2"/>
-		</g>
-	</g>
-</g>
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="#EDF3FF" stroke="#3574F0" stroke-linecap="round" stroke-linejoin="round" d="M10.581 3.5H6.419A2.919 2.919 0 0 0 3.5 6.419v4.162A2.919 2.919 0 0 0 6.419 13.5h4.162a2.919 2.919 0 0 0 2.919-2.919V6.419A2.919 2.919 0 0 0 10.581 3.5Z"/>
+    <path fill="#3574F0" d="M2.75 3.75a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm3.625 4a1.375 1.375 0 1 0 0-2.75 1.375 1.375 0 0 0 0 2.75Z"/>
+    <path fill="none" stroke="#3574F0" stroke-miterlimit="10" d="M9.75 11.5a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5Z"/>
 </svg>
