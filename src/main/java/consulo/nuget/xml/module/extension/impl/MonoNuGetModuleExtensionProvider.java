@@ -3,8 +3,8 @@ package consulo.nuget.xml.module.extension.impl;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.nuget.xml.module.extension.NuGetOldModuleExtensionProvider;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * @author VISTALL

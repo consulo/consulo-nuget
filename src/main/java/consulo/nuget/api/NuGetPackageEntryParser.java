@@ -20,7 +20,7 @@ import consulo.util.lang.StringUtil;
 import org.jdom.Element;
 import org.jdom.Namespace;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.*;
 
 /**

@@ -20,8 +20,8 @@ import consulo.annotation.access.RequiredReadAction;
 import consulo.nuget.xml.dom.NuGetXmlPackage;
 import consulo.virtualFileSystem.VirtualFile;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.function.Consumer;
 
 /**

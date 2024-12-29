@@ -21,7 +21,7 @@ import consulo.nuget.xml.module.extension.NuGetRequestQueue;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.io.IOException;
 
 /**

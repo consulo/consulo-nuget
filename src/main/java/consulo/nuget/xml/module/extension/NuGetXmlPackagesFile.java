@@ -20,7 +20,7 @@ import consulo.nuget.xml.dom.NuGetXmlPackage;
 import consulo.xml.util.xml.DefinesXml;
 import consulo.xml.util.xml.DomElement;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.List;
 
 /**

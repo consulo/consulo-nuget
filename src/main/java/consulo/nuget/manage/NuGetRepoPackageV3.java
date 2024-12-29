@@ -3,7 +3,7 @@ package consulo.nuget.manage;
 import consulo.nuget.api.v3.SearchQueryService;
 import consulo.repository.ui.RepoPackage;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL
