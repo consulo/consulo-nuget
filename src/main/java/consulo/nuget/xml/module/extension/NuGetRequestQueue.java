@@ -16,6 +16,7 @@
 
 package consulo.nuget.xml.module.extension;
 
+import consulo.http.HttpRequestProcessor;
 import consulo.http.HttpRequests;
 import consulo.logging.Logger;
 
@@ -27,32 +28,26 @@ import java.util.Map;
  * @author VISTALL
  * @since 16.03.2015
  */
-public class NuGetRequestQueue
-{
-	private static final Logger LOGGER = Logger.getInstance(NuGetRequestQueue.class);
+public class NuGetRequestQueue {
+    private static final Logger LOGGER = Logger.getInstance(NuGetRequestQueue.class);
 
-	private Map<String, Object> myCache = new HashMap<String, Object>();
+    private Map<String, Object> myCache = new HashMap<String, Object>();
 
-	@SuppressWarnings("unchecked")
-	public <T> T request(String url, HttpRequests.RequestProcessor<T> requestProcessor)
-	{
-		Object o = myCache.get(url);
-		if(o != null)
-		{
-			return (T) o;
-		}
+    @SuppressWarnings("unchecked")
+    public <T> T request(String url, HttpRequestProcessor<T> requestProcessor) {
+        Object o = myCache.get(url);
+        if (o != null) {
+            return (T) o;
+        }
 
-		T value = null;
-		try
-		{
-			value = HttpRequests.request(url).accept("*/*").gzip(false).connect(requestProcessor);
-		}
-		catch(IOException e)
-		{
-			LOGGER.warn("Failed to execute url: " + url, e);
-		}
+        T value = null;
+        try {
+            value = HttpRequests.request(url).accept("*/*").gzip(false).connect(requestProcessor);
+        } catch (IOException e) {
+            LOGGER.warn("Failed to execute url: " + url, e);
+        }
 
-		myCache.put(url, value);
-		return value;
-	}
+        myCache.put(url, value);
+        return value;
+    }
 }
