@@ -451,7 +451,7 @@ public abstract class NuGetBasedRepositoryWorker
 			}
 			finally
 			{
-				indicator.setText(null);
+				indicator.setText(LocalizeValue.empty());
 			}
 		}
 		return List.of();
@@ -514,7 +514,7 @@ public abstract class NuGetBasedRepositoryWorker
 
 		WriteAction.runAndWait(modifiableRootModel::commit);
 
-		indicator.setText(null);
+		indicator.setText(LocalizeValue.empty());
 	}
 
 	private static boolean addLibraryFiles(VirtualFile libraryDir, Library.ModifiableModel modifiableModel)
@@ -580,7 +580,7 @@ public abstract class NuGetBasedRepositoryWorker
 
 		WriteAction.runAndWait(modifiableModel::commit);
 
-		indicator.setText(null);
+		indicator.setText(LocalizeValue.empty());
 	}
 
 	protected void removeInvalidDependenciesFromFileSystem(final Map<String, PackageInfo> packages, ProgressIndicator indicator)
@@ -620,7 +620,7 @@ public abstract class NuGetBasedRepositoryWorker
 				}
 			}
 		});
-		indicator.setText(null);
+		indicator.setText(LocalizeValue.empty());
 	}
 
 	public void cancelTasks()
