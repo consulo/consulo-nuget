@@ -416,7 +416,7 @@ public abstract class NuGetBasedRepositoryWorker
 			}
 			finally
 			{
-				indicator.setTextValue(LocalizeValue.empty());
+				indicator.setText(LocalizeValue.empty());
 			}
 		}
 
