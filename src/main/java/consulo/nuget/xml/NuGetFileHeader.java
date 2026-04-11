@@ -35,7 +35,7 @@ import consulo.nuget.xml.module.extension.NuGetXmlPackagesFile;
 import consulo.project.Project;
 import consulo.util.lang.Comparing;
 import consulo.virtualFileSystem.VirtualFile;
-import consulo.xml.ide.highlighter.XmlFileType;
+import consulo.xml.language.XmlFileType;
 import jakarta.inject.Inject;
 
 import jakarta.annotation.Nonnull;

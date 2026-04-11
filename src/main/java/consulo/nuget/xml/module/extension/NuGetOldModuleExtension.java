@@ -29,9 +29,9 @@ import consulo.nuget.xml.dom.NuGetXmlPackage;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.VirtualFileManager;
+import consulo.xml.dom.DomFileElement;
+import consulo.xml.dom.DomManager;
 import consulo.xml.language.psi.XmlFile;
-import consulo.xml.util.xml.DomFileElement;
-import consulo.xml.util.xml.DomManager;
 import org.jdom.Element;
 
 import jakarta.annotation.Nonnull;

@@ -16,11 +16,10 @@
 
 package consulo.nuget.xml.dom;
 
-import consulo.xml.util.xml.Attribute;
-import consulo.xml.util.xml.DomElement;
-import consulo.xml.util.xml.GenericAttributeValue;
-import consulo.xml.util.xml.Required;
-
+import consulo.xml.dom.Attribute;
+import consulo.xml.dom.DomElement;
+import consulo.xml.dom.GenericAttributeValue;
+import consulo.xml.dom.Required;
 import jakarta.annotation.Nonnull;
 
 /**
@@ -32,7 +31,7 @@ public interface NuGetXmlPackage extends DomElement
 	@Nonnull
 	@Attribute
 	@Required
-	GenericAttributeValue<String> getId();
+    GenericAttributeValue<String> getId();
 
 	@Nonnull
 	@Attribute
