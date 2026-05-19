@@ -53,4 +53,5 @@ module consulo.nuget {
     exports consulo.nuget.xml.module.extension;
 
     opens consulo.nuget.xml.dom to com.intellij.xml;
+
 }
