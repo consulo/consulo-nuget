@@ -9,7 +9,6 @@ module consulo.nuget {
     requires consulo.external.service.api;
     requires consulo.repository.ui.api;
     requires consulo.http.api;
-    requires consulo.ui.ex.awt.api;
 
     requires consulo.application.api;
     requires consulo.application.content.api;
@@ -36,9 +35,6 @@ module consulo.nuget {
     requires consulo.dotnet.api;
 
     requires com.google.gson;
-
-    // TODO [VISTALL] remove in future
-    requires java.desktop;
 
     exports consulo.nuget;
     exports consulo.nuget.action;
