@@ -26,9 +26,8 @@ import consulo.nuget.api.*;
 import consulo.nuget.api.v3.Index;
 import consulo.nuget.api.v3.PackageBaseAddressIndex;
 import consulo.nuget.util.NuPkgUtil;
-import consulo.project.ui.notification.Notification;
-import consulo.project.ui.notification.NotificationType;
-import consulo.project.ui.notification.Notifications;
+import consulo.project.Project;
+import consulo.project.ui.notification.NotificationService;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.util.collection.ArrayUtil;
 import consulo.util.io.FileUtil;
@@ -206,7 +205,10 @@ public abstract class NuGetBasedRepositoryWorker {
                         NuGetPackageEntry packageEntry = value.getPackageEntry();
                         String downloadUrl = packageEntry == null ? null : packageEntry.contentUrl();
                         if (downloadUrl == null) {
-                            Notifications.Bus.notify(new Notification(NuGetNotificationGroup.GROUP, "Warning", "Package is not resolved with id: " + value.getId() + " and version: " + value.getVersion(), NotificationType.WARNING));
+                            NotificationService.getInstance().newWarn(NuGetNotificationGroup.GROUP)
+                                    .title(LocalizeValue.localizeTODO("NuGet"))
+                                    .content(LocalizeValue.localizeTODO("Package is not resolved with id: " + value.getId() + " and version: " + value.getVersion()))
+                                    .notify((Project) getProject());
                             continue;
                         }
 
@@ -230,7 +232,10 @@ public abstract class NuGetBasedRepositoryWorker {
                             } catch (IOException e) {
                                 FileUtil.delete(downloadTarget);
 
-                                Notifications.Bus.notify(new Notification(NuGetNotificationGroup.GROUP, "Warning", "Fail to download dependency with id: " + value.getId() + " " + "and version: " + value.getVersion(), NotificationType.WARNING));
+                                NotificationService.getInstance().newWarn(NuGetNotificationGroup.GROUP)
+                                        .title(LocalizeValue.localizeTODO("NuGet"))
+                                        .content(LocalizeValue.localizeTODO("Fail to download dependency with id: " + value.getId() + " " + "and version: " + value.getVersion()))
+                                        .notify((Project) getProject());
                             }
                         }
 
