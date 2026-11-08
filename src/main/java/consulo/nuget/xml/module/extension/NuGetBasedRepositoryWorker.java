@@ -475,7 +475,7 @@ public abstract class NuGetBasedRepositoryWorker {
             if (libraryName != null) {
                 int i = libraryName.indexOf(NUGET_LIBRARY_PREFIX);
                 if (i != -1) {
-                    String idAndVersion = libraryName.substring(i, libraryName.length());
+                    String idAndVersion = libraryName.substring(i + NUGET_LIBRARY_PREFIX.length());
 
                     PackageInfo nuGetPackage = packages.get(idAndVersion);
                     if (nuGetPackage == null) {

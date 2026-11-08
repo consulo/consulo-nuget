@@ -92,7 +92,7 @@ public class NuGetOldModuleExtension extends ModuleExtensionBase<NuGetOldModuleE
 		List<NuGetPackageInfo> packageInfos = new ArrayList<>();
 		for(NuGetXmlPackage xmlPackage : packagesFile.getPackages())
 		{
-			packageInfos.add(new NuGetPackageInfo(xmlPackage.getId().getValue(), xmlPackage.getTargetFramework().getValue(), xmlPackage.getTargetFramework().getValue()));
+			packageInfos.add(new NuGetPackageInfo(xmlPackage.getId().getValue(), xmlPackage.getVersion().getValue(), xmlPackage.getTargetFramework().getValue()));
 		}
 		return packageInfos;
 	}

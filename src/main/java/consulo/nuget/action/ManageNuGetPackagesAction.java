@@ -1,17 +1,19 @@
 package consulo.nuget.action;
 
 import consulo.annotation.component.ActionImpl;
-import consulo.language.editor.CommonDataKeys;
-import consulo.language.util.ModuleUtilCore;
+import consulo.annotation.component.ActionParentRef;
+import consulo.annotation.component.ActionRef;
+import consulo.dotnet.packageManager.DotNetPackageManager;
+import consulo.localize.LocalizeValue;
 import consulo.module.Module;
+import consulo.nuget.manage.NuGetPackageManagementServiceProvider;
+import consulo.repository.ui.PackagesEditorManager;
 import consulo.nuget.icon.NuGetIconGroup;
-import consulo.nuget.manage.NuGetPackageManagmentService;
-import consulo.nuget.module.extension.NuGetModuleExtension;
-import consulo.repository.ui.RepositoryDialogFactory;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.AnActionWithSyncUpdate;
 import consulo.ui.ex.action.DumbAwareAction;
+import consulo.ui.ex.action.IdeActions;
 import consulo.ui.image.Image;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -20,24 +22,20 @@ import jakarta.annotation.Nullable;
  * @author VISTALL
  * @since 30/05/2021
  */
-@ActionImpl(id = "NuGet.ManageNuGetPackages")
+@ActionImpl(id = "NuGet.ManageNuGetPackages", parents = @ActionParentRef(@ActionRef(id = IdeActions.GROUP_PROJECT_VIEW_POPUP)))
 public class ManageNuGetPackagesAction extends DumbAwareAction implements AnActionWithSyncUpdate {
+    public ManageNuGetPackagesAction() {
+        super(LocalizeValue.localizeTODO("Manage NuGet Packages"));
+    }
+
     @RequiredUIAccess
     @Override
     public void actionPerformed(@Nonnull AnActionEvent e) {
-        Module module = e.getData(CommonDataKeys.MODULE);
+        Module module = e.getData(Module.KEY);
         if (module == null) {
             return;
         }
-
-        NuGetModuleExtension extension = ModuleUtilCore.getExtension(module, NuGetModuleExtension.class);
-        if (extension == null) {
-            return;
-        }
-
-        RepositoryDialogFactory repositoryDialogFactory = module.getProject().getInstance(RepositoryDialogFactory.class);
-
-        repositoryDialogFactory.showManagePackagesDialogAsync(new NuGetPackageManagmentService(extension), null);
+        PackagesEditorManager.getInstance(module.getProject()).open(NuGetPackageManagementServiceProvider.class, module.getName());
     }
 
     @Nullable
@@ -49,6 +47,6 @@ public class ManageNuGetPackagesAction extends DumbAwareAction implements AnActi
     @Override
     public void update(@Nonnull AnActionEvent e) {
         Module module = e.getData(Module.KEY);
-        e.getPresentation().setEnabledAndVisible(module != null && module.getExtension(NuGetModuleExtension.class) != null);
+        e.getPresentation().setEnabledAndVisible(module != null && DotNetPackageManager.find(module) != null);
     }
 }
